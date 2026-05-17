@@ -57,3 +57,12 @@ Det ger samma stöd men med betydligt färre filer.
 ## EPUB-export
 
 Romanskaparen kan instrueras att skapa EPUB som separat nedladdningsfil när användaren begär export. Projektzipen behöver då normalt bara uppdateras med exportlogg/status, inte innehålla själva EPUB-filen.
+
+
+## Rekommenderad användning av titel/författare/omslag
+
+När GPT:n startar ett nytt romanprojekt bör den alltid fråga efter titel, undertitel, författare och om omslagsbild ska skapas. Om författare inte anges ska användarens namn användas som standard när det är tillgängligt.
+
+## Export till EPUB och PDF
+
+Den här versionen är optimerad för mer konsekvent export. Trots det kan viss variation fortfarande uppstå beroende på vilken exportmiljö som används. Reglerna i `05-projektstruktur-och-synk.md` minskar risken genom att kräva normalisering av markdown före export.

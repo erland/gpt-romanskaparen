@@ -481,3 +481,7 @@ EPUB-filer behöver normalt inte ligga i projektzipen. När användaren begär E
 | Datum | Format | Filnamn | Inkluderade kapitel | Kommentar |
 |---|---|---|---|---|
 ```
+
+
+## Uppdatering
+Projektmallen ska också innehålla titel, undertitel, författare och omslagsstatus samt följa exportreglerna för EPUB/PDF enligt `05-projektstruktur-och-synk.md`.

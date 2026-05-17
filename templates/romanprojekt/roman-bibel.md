@@ -1,5 +1,11 @@
 # Romanbibel
 
+## Titel
+
+## Undertitel
+
+## Författare
+
 ## Arbetstitel
 
 ## Genre
@@ -7,6 +13,10 @@
 ## Målgrupp
 
 ## Ton och känsla
+
+## Omslagsbild/framsida
+- Status:
+- Önskad stil eller motiv:
 
 ## Premiss
 

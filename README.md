@@ -91,3 +91,18 @@ Denna version innehåller `knowledge-upload/05-projektstruktur-och-synk.md` och 
 ## EPUB-export
 
 Paketet stödjer att Romanskaparen skapar en EPUB-fil på begäran. EPUB ska normalt levereras som en separat nedladdningsfil, medan romanprojektets zip fortsätter vara källarkivet med kapitel, status och exportlogg.
+
+
+## Titel, undertitel, författare och omslag
+
+Den här versionen instruerar Romanskaparen att alltid fråga om:
+- titel
+- undertitel
+- vem som ska stå som författare
+- om en omslagsbild ska skapas
+
+Om användaren inte anger författare ska GPT:n använda användarens namn som standard om det är tillgängligt.
+
+## EPUB- och PDF-konsistens
+
+Den här versionen innehåller skärpta regler för export. Målet är att minska variation mellan exporttillfällen genom att normalisera markdown före EPUB/PDF-export, så att råa markörer som `**` och rubriktecken inte ska följa med till slutdokumentet. Helt identisk rendering kan ändå påverkas av den aktuella exportmiljön och verktygskedjan.

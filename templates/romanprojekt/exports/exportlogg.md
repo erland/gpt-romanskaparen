@@ -1,4 +1,4 @@
 # Exportlogg
 
-| Datum | Format | Filnamn | Inkluderade kapitel | Kommentar |
-|---|---|---|---|---|
+| Datum | Format | Filnamn | Inkluderade kapitel | Titel | Författare | Kommentar |
+|---|---|---|---|---|---|---|

@@ -1,5 +1,11 @@
 # Synopsis
 
+## Titel
+
+## Undertitel
+
+## Författare
+
 ## Kort baksidestext
 
 ## Sammanfattning av hela handlingen

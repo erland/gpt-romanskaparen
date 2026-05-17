@@ -2,10 +2,13 @@
 
 ## Projekt
 - Titel:
+- Undertitel:
+- Författare:
 - Senast uppdaterad:
 - Nuvarande fas:
 - Senast godkända kapitel:
 - Nästa kapitel:
+- Omslagsbild: Planerad / Skapad / Saknas
 
 ## Kapitelinventering
 | Kapitel | Fil | Titel | Status |
