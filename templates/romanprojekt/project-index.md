@@ -42,3 +42,8 @@
 - Senaste kapitel i `arbetslogg.md`: inget
 - Senaste export: ingen
 - Resultat: Synkad
+
+
+## Publicering
+- `publishing/` innehåller metadata och sättningsregler för EPUB/PDF.
+- `kapitelnoteringar.md` innehåller anteckningar som inte ska exporteras som boktext.

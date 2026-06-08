@@ -32,3 +32,8 @@ Detta är projektarkivet för en roman som utvecklas steg för steg.
 - `arbetslogg.md` visar vad som har gjorts.
 - `kapitel/` innehåller kapitelutkast och godkända kapitel.
 - `exports/exportlogg.md` visar skapade EPUB/PDF-exporter.
+
+
+## Publicering
+- `publishing/` innehåller metadata och sättningsregler för EPUB/PDF.
+- `kapitelnoteringar.md` innehåller anteckningar som inte ska exporteras som boktext.

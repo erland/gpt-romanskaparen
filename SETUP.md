@@ -2,7 +2,7 @@
 
 ## Rekommenderad uppladdning
 
-För att hålla dig under gränsen på 20 knowledge-filer, ladda bara upp filerna i:
+Ladda endast upp filerna i:
 
 ```text
 knowledge-upload/
@@ -32,37 +32,29 @@ Om du vill ge GPT:n en exakt projektmall som knowledge, ladda upp den samlade fi
 project-template-bundle.md
 ```
 
-Då blir det totalt 6 knowledge-filer, fortfarande långt under gränsen på 20.
+Då blir det totalt 6 knowledge-filer.
+
+## Katalogen knowledge är borttagen
+
+Tidigare fanns en `knowledge/`-katalog med separata källfiler. Den används inte längre i GPT-uploaden och är borttagen ur paketet för att undvika förvirring och spara filplatser.
 
 ## Rekommenderad GPT-konfiguration
 
 - Instructions: använd `gpt-instructions.md`
 - Knowledge: använd endast `knowledge-upload/*.md`
 - Conversation starters: använd `conversation-starters.md`
-- Capabilities: filhantering/code interpreter kan vara användbart om GPT:n ska skapa zip-paket för romanprojekt
+- Capabilities: aktivera filhantering/code interpreter om GPT:n ska skapa zip-paket, EPUB eller PDF
 
-## Varför denna struktur?
+## Viktigaste beteenden
 
-Custom GPT:er har en praktisk gräns för antal knowledge-filer. Därför är kunskapen samlad i få tematiska filer:
-
-1. Arbetsflöde och nybörjarstöd
-2. Berättelsehantverk
-3. Karaktärer, värld och kontinuitet
-4. Genreguider
-5. Projektstruktur, synk och exportregler
-
-Det ger samma stöd men med betydligt färre filer.
-
-
-## EPUB-export
-
-Romanskaparen kan instrueras att skapa EPUB som separat nedladdningsfil när användaren begär export. Projektzipen behöver då normalt bara uppdateras med exportlogg/status, inte innehålla själva EPUB-filen.
-
-
-## Rekommenderad användning av titel/författare/omslag
-
-När GPT:n startar ett nytt romanprojekt bör den alltid fråga efter titel, undertitel, författare och om omslagsbild ska skapas. Om författare inte anges ska användarens namn användas som standard när det är tillgängligt.
+- GPT:n ska erbjuda projekt-zip när ett nytt romanprojekt startas eller när större ändringar sparas.
+- GPT:n ska vid filbaserat arbete normalt inte visa hela kapitel i chatten.
+- GPT:n ska visa vilka filer som ändrats, kort sammanfattning och nästa steg.
+- Kapitelnoteringar ska sparas i `kapitelnoteringar.md`, inte i kapitelfilerna.
+- Kapitelfiler ska använda rubrikformen `# 1. Kapitelrubrik`.
+- EPUB/PDF ska visa kapitelstart som två centrerade rader: nummer + rubrik.
+- Innehållsförteckningen ska visa `1. Kapitelrubrik`.
 
 ## Export till EPUB och PDF
 
-Den här versionen är optimerad för mer konsekvent export. Trots det kan viss variation fortfarande uppstå beroende på vilken exportmiljö som används. Reglerna i `05-projektstruktur-och-synk.md` minskar risken genom att kräva normalisering av markdown före export.
+Reglerna i `knowledge-upload/05-projektstruktur-och-synk.md` styr export. Projektmallen innehåller `publishing/metadata.yaml`, `publishing/epub.css`, `publishing/pdf-template.tex` och `publishing/build-notes.md`.

@@ -1,108 +1,76 @@
 # Romanskaparen GPT-paket
 
-Detta paket innehåller material för att skapa en Custom GPT som guidar användaren genom att planera, skriva och vidareutveckla en roman steg för steg.
+Detta paket innehåller material för en Custom GPT som planerar, skriver, reviderar och exporterar romanprojekt steg för steg.
 
 ## Rekommenderad GPT-konfiguration
 
 **Namn:** Romanskaparen
 
-**Beskrivning:**
-En guidande skrivpartner för romanprojekt. Hjälper nya och erfarna författare att utveckla idé, synopsis, karaktärer, kapitelplan och skriva romanen kapitel för kapitel med kontinuitet och tydlig struktur.
+**Beskrivning:** En guidande skrivpartner för romanprojekt. Hjälper användaren att utveckla idé, synopsis, karaktärer, kapitelplan, kapiteltext, kontinuitet, projekt-zip samt EPUB/PDF-export.
 
 ## Filer
 
 - `gpt-instructions.md` – huvudinstruktioner att klistra in i GPT Builder.
 - `conversation-starters.md` – förslag på conversation starters.
-- `knowledge/` – stödmaterial som kan laddas upp som Knowledge.
-- `templates/romanprojekt/` – mall för hur ett romanprojekt kan paketeras som zip och byggas på successivt.
+- `knowledge-upload/` – de enda filer som normalt ska laddas upp som GPT Knowledge.
+- `templates/romanprojekt/` – mall för romanprojekt-zip.
+- `project-template-bundle.md` – samlad mallfil om du vill ladda upp projektmallen som extra knowledge-fil.
+
+Katalogen `knowledge/` är borttagen. Den innehöll bara delkällor till de hopslagna filerna i `knowledge-upload/` och behövs inte längre.
+
+## Rekommenderad uppladdning
+
+Ladda upp dessa fem filer från `knowledge-upload/`:
+
+```text
+01-arbetsflode-och-nyborjarstod.md
+02-berattelsehantverk.md
+03-karaktarer-varld-och-kontinuitet.md
+04-genreguider.md
+05-projektstruktur-och-synk.md
+```
+
+Det håller GPT:n långt under gränsen på 20 knowledge-filer. Kopiera `gpt-instructions.md` till Instructions-fältet.
+
+## Viktiga beteenderegler
+
+Romanskaparen ska:
+
+- erbjuda att skapa projekt-zip när ett nytt projekt startas eller större ändringar gjorts
+- vid filbaserat arbete normalt inte visa hela kapiteltexten i chatten
+- i stället visa ändrade filer, kort sammanfattning, kontinuitetsnoteringar och nästa steg
+- spara kapiteltext i `kapitel/kapitel-XX.md`
+- spara kapitelnoteringar i `kapitelnoteringar.md`, inte i kapitelfilerna
+- hålla `kapitelplan.md`, `projektstatus.md`, `arbetslogg.md`, `tidslinje.md`, `kontinuitetsanteckningar.md` och `project-index.md` synkade
+
+Visa full kapiteltext i chatten bara när användaren uttryckligen ber om det eller när inget projektpaket används.
+
+## Publiceringsstandard
+
+Markdown är källformat. Projektmallen innehåller `publishing/` med metadata och sättningsregler för Pandoc-baserad EPUB/PDF-export.
+
+Kapitelfiler ska använda:
+
+```markdown
+# 1. Kapitelrubrik
+```
+
+Vid EPUB/PDF-export ska kapitelstarten visas som två centrerade, kompakta rader:
+
+```text
+1
+Kapitelrubrik
+```
+
+Innehållsförteckningen ska visa:
+
+```text
+1. Kapitelrubrik
+```
 
 ## Rekommenderade capabilities
 
-- Web browsing: Av, om romanen inte kräver research.
-- Canvas: På, om tillgängligt.
-- Code interpreter / filskapande: På, om GPT:n ska kunna skapa och uppdatera zip-filer.
-- Image generation: Valfritt, användbart för omslag, miljöbilder eller karaktärskoncept.
-
-## Rekommenderat arbetssätt
-
-Romanskaparen bör arbeta i två huvudlägen:
-
-1. **Starta nytt romanprojekt**
-   - Samlar in grundidé och mål.
-   - Skapar synopsis, romanbibel, kapitelplan, stilguide, tidslinje och karaktärsblad.
-   - Erbjuder att paketera projektet som zip.
-
-2. **Fortsätt på befintligt romanprojekt**
-   - Användaren laddar upp projekt-zipen.
-   - GPT:n läser projektfilerna.
-   - GPT:n identifierar nästa rimliga steg eller kapitel.
-   - GPT:n skriver nytt material i chatten först.
-   - När användaren är nöjd uppdateras projektpaketet.
-
-## Viktig princip
-
-Chatten är arbetsytan där användaren granskar och justerar texten.
-Zip-filen är projektarkivet som bevarar plan, kapitel, kontinuitet och historik.
-
-
-## Genrekunskap
-
-Den här versionen innehåller praktiska knowledge-filer för genrer. De är avsedda att laddas upp som GPT Knowledge tillsammans med övriga filer i `knowledge/`.
-
-Tillagda genreguider:
-
-- `knowledge/genrer/genreoversikt.md`
-- `knowledge/genrer/fantasy.md`
-- `knowledge/genrer/deckare-mysterium.md`
-- `knowledge/genrer/thriller.md`
-- `knowledge/genrer/romance.md`
-- `knowledge/genrer/skraeck.md`
-- `knowledge/genrer/science-fiction.md`
-- `knowledge/genrer/historisk-roman.md`
-- `knowledge/genrer/barn-och-ungdom.md`
-- `knowledge/genrer/litterar-realistisk.md`
-
-Guiderna ska hjälpa Romanskaparen att ställa bättre frågor, skapa bättre kapitelplaner och hålla rätt tempo och läsarförväntningar för olika genrer.
-
-## Nybörjar- och hantverksstöd
-
-Den här versionen innehåller även praktiska stöd för ovana författare och för kapitelvis förbättring:
-
-- `knowledge/forsta-gangen-guide.md` – hjälper GPT:n starta enkelt och bygga en minsta fungerande romanidé.
-- `knowledge/konflikt-och-insatser.md` – stöd för mål, hinder, insatser och eskalering.
-- `knowledge/scenmall.md` – stöd för att planera och förbättra scener.
-- `knowledge/dialogguide.md` – stöd för mer levande dialog med röst och undertext.
-- `knowledge/revisionsprocess.md` – stegvis revisionsprocess från struktur till slutputs.
-- `templates/romanprojekt/projektstatus.md` – gör det lättare att fortsätta projektet i en ny chatt.
-- `templates/romanprojekt/kapitel/kapitelmall.md` – planerings- och uppföljningsmall för varje kapitel.
-
-Rekommendationen är att Romanskaparen först säkrar romanens kärna: huvudperson, mål, hinder, insats och förändring. Därefter kan romanbibeln, kapitelplanen och första kapitlet byggas ut.
-
-## Notering om GPT-instruktionens längd
-
-`gpt-instructions.md` är avsiktligt komprimerad för att hålla sig under GPT Builder-gränsen på 8000 tecken. Mer detaljerad vägledning ligger i `knowledge/` och bör laddas upp som knowledge-filer.
-
-
-## Uppdatering: stabil projektstruktur
-
-Denna version innehåller `knowledge-upload/05-projektstruktur-och-synk.md` och `templates/romanprojekt/project-index.md` för att GPT:n ska skapa samma filer varje gång och hålla kapitel, status, arbetslogg, tidslinje och kontinuitet synkade.
-
-
-## EPUB-export
-
-Paketet stödjer att Romanskaparen skapar en EPUB-fil på begäran. EPUB ska normalt levereras som en separat nedladdningsfil, medan romanprojektets zip fortsätter vara källarkivet med kapitel, status och exportlogg.
-
-
-## Titel, undertitel, författare och omslag
-
-Den här versionen instruerar Romanskaparen att alltid fråga om:
-- titel
-- undertitel
-- vem som ska stå som författare
-- om en omslagsbild ska skapas
-
-Om användaren inte anger författare ska GPT:n använda användarens namn som standard om det är tillgängligt.
-
-## EPUB- och PDF-konsistens
-
-Den här versionen innehåller skärpta regler för export. Målet är att minska variation mellan exporttillfällen genom att normalisera markdown före EPUB/PDF-export, så att råa markörer som `**` och rubriktecken inte ska följa med till slutdokumentet. Helt identisk rendering kan ändå påverkas av den aktuella exportmiljön och verktygskedjan.
+- Web browsing: Av om romanen inte kräver research.
+- Canvas: På om tillgängligt.
+- Code interpreter / filskapande: På om GPT:n ska kunna skapa och uppdatera zip-filer.
+- Image generation: Valfritt för omslag och konceptbilder.

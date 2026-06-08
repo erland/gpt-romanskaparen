@@ -83,7 +83,8 @@ Efter godkänt kapitel uppdateras:
 - tidslinje.md
 - karaktärsblad vid behov
 - revisionsonskemal.md vid behov
+- kapitelnoteringar.md med anteckningar som inte ska ligga i kapitelfilen
 
 ## Fas 6: Omslag och export
 När användaren vill ha omslag: säkerställ titel, undertitel och författarnamn först.
-När användaren vill ha EPUB/PDF: utgå från de faktiska kapitelfilerna och skapa export som separat fil.
+När användaren vill ha EPUB/PDF: utgå från de faktiska kapitelfilerna och skapa export som separat fil. Använd publiceringsstandarden i `05-projektstruktur-och-synk.md`: kapitelrubrik i manus som `# 1. Kapitelrubrik`, kapitelstart i export som två centrerade rader och TOC-post som `1. Kapitelrubrik`.

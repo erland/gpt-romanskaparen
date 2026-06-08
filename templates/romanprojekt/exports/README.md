@@ -7,3 +7,5 @@ Exporter är inte romanens kanoniska källtext. De kan återskapas från `kapite
 EPUB- och PDF-filer behöver normalt inte ligga i projektzipen. När användaren begär export kan de ges som separata nedladdningsfiler.
 
 Före export ska underlaget normaliseras så att rubriker, listor, fetstil, kursiv stil och andra markdown-strukturer renderas korrekt och att råa markdown-markörer inte lämnas kvar synliga i slutdokumentet.
+
+Layout och metadata styrs i `publishing/`. Exporter ska kunna återskapas från kapitelfilerna och publiceringsfilerna.

@@ -1,0 +1,20 @@
+% Romanskaparen PDF-standard för Pandoc/LaTeX.
+% Målet är en kompakt kapitelstart: nummer centrerat på första raden,
+% rubrik centrerad på andra raden, och TOC-post i formen "1. Kapitelrubrik".
+
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{tabularx}
+
+\titleformat{\chapter}[display]
+  {\normalfont\huge\filcenter}
+  {\thechapter}
+  {0.25em}
+  {\Huge}
+\titlespacing*{\chapter}{0pt}{1.5em}{1.0em}
+
+\setcounter{tocdepth}{1}
+\hypersetup{hidelinks}

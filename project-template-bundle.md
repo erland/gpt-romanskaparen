@@ -29,7 +29,9 @@ Detta är projektarkivet för en roman som utvecklas steg för steg.
 - `kontinuitetsanteckningar.md` fångar fakta som inte får motsägas.
 - `revisionsonskemal.md` samlar planerade förbättringar.
 - `arbetslogg.md` visar vad som har gjorts.
-- `kapitel/` innehåller kapitelutkast och godkända kapitel.
+- `kapitel/` innehåller godkända kapitel som ska kunna exporteras.
+- `kapitelnoteringar.md` innehåller anteckningar som inte ska exporteras.
+- `publishing/` innehåller metadata och sättningsregler för EPUB/PDF.
 
 ```
 
@@ -99,18 +101,9 @@ Detta är projektarkivet för en roman som utvecklas steg för steg.
 ## kapitel/kapitel-01.md
 
 ```markdown
-# Kapitel 1 – [Titel]
+# 1. [Titel]
 
 [Kapiteltext placeras här när användaren godkänt versionen i chatten.]
-
----
-
-## Kapitelnotering
-
-- Viktiga händelser:
-- Nya kontinuitetspunkter:
-- Öppna frågor:
-- Saker att följa upp:
 
 ```
 
@@ -119,7 +112,7 @@ Detta är projektarkivet för en roman som utvecklas steg för steg.
 ## kapitel/kapitelmall.md
 
 ```markdown
-# Kapitel X – [Titel]
+# X. [Kapitelrubrik]
 
 ## Kapitelmål
 
@@ -161,16 +154,6 @@ Vilken fråga, känsla eller situation leder vidare till nästa kapitel?
 
 [Kapiteltext]
 
----
-
-## Efter kapitel
-
-- Viktiga händelser:
-- Nya fakta:
-- Relationsförändringar:
-- Öppna frågor:
-- Kontinuitet att följa upp:
-- Eventuella revisionsönskemål:
 
 ```
 
@@ -485,3 +468,56 @@ EPUB-filer behöver normalt inte ligga i projektzipen. När användaren begär E
 
 ## Uppdatering
 Projektmallen ska också innehålla titel, undertitel, författare och omslagsstatus samt följa exportreglerna för EPUB/PDF enligt `05-projektstruktur-och-synk.md`.
+
+---
+
+## kapitelnoteringar.md
+
+```markdown
+# Kapitelnoteringar
+
+Kapitelnoteringar sparas här och ska inte ligga i `kapitel/kapitel-XX.md`.
+
+## Kapitel 1 – Kapitelrubrik
+- Kort sammanfattning:
+- Nya fakta/ledtrådar:
+- Kontinuitetsrisker:
+- Öppna frågor:
+- Nästa skrivsteg:
+```
+
+---
+
+## publishing/metadata.yaml
+
+```yaml
+---
+title: "[Titel]"
+subtitle: "[Undertitel]"
+author: "[Författare]"
+lang: sv-SE
+rights: "© [År] [Författare]"
+cover-image: "omslag/cover.jpg"
+toc-depth: 1
+---
+```
+
+---
+
+## publishing/build-notes.md
+
+```markdown
+# Build-notes
+
+- Kapitelrubrik i manus: `# 1. Kapitelrubrik`
+- Kapitelstart i EPUB/PDF: nummer och rubrik på två centrerade rader
+- TOC-post: `1. Kapitelrubrik`
+- Kapitelnoteringar exporteras inte
+```
+
+
+---
+
+## Chatt- och zip-beteende
+
+När GPT:n arbetar med denna projektmall ska den normalt uppdatera filer och skapa/erbjuda projekt-zip. Den ska inte visa hela kapiteltexten i chatten om användaren inte uttryckligen ber om det. Chattsvaret ska fokusera på ändrade filer, kort sammanfattning, viktiga kontinuitetspunkter och nästa steg.

@@ -1,0 +1,44 @@
+/* Romanskaparen EPUB-standard */
+body {
+  line-height: 1.45;
+}
+
+h1.chapter-title,
+section.level1 > h1 {
+  text-align: center;
+  margin-top: 1.6em;
+  margin-bottom: 1.0em;
+  line-height: 1.15;
+  font-weight: normal;
+}
+
+.chapter-number {
+  display: block;
+  text-align: center;
+  font-size: 1.25em;
+  margin: 0 0 0.25em 0;
+  font-weight: normal;
+}
+
+.chapter-name {
+  display: block;
+  text-align: center;
+  font-size: 1.35em;
+  margin: 0;
+  font-weight: normal;
+}
+
+.titlepage {
+  text-align: center;
+  margin-top: 30vh;
+}
+
+.titlepage h1,
+.titlepage .subtitle,
+.titlepage .author {
+  text-align: center;
+}
+
+p {
+  margin: 0 0 0.85em 0;
+}
