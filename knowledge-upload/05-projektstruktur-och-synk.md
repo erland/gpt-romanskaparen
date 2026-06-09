@@ -35,6 +35,7 @@ romanprojekt/
     epub.css
     pdf-template.tex
     build-notes.md
+    fix-epub-after-pandoc.py  # valfri hjälpscript vid Pandoc-export
   exports/
     README.md
     exportlogg.md
@@ -98,7 +99,7 @@ Om användaren laddar upp en roman-zip med inkonsekvenser:
 ## Publiceringsstandard
 Markdown är källformatet. `publishing/` innehåller återanvändbara regler för EPUB/PDF-sättning. Om katalogen saknas i ett äldre projekt ska den skapas när projektet uppdateras eller exporteras.
 
-`publishing/metadata.yaml` ska samla titel, undertitel, författare, språk, rättigheter, omslagsfil och eventuell publisher/ISBN. `publishing/epub.css` styr EPUB-layout. `publishing/pdf-template.tex` styr PDF-layout. `publishing/build-notes.md` beskriver exakt hur exporten skapades och vilka avsteg som gjorts.
+`publishing/metadata.yaml` ska samla titel, undertitel, författare, språk, rättigheter, omslagsfil och eventuell publisher/ISBN. `publishing/epub.css` styr EPUB-layout. `publishing/pdf-template.tex` styr PDF-layout. `publishing/build-notes.md` beskriver exakt hur exporten skapades och vilka avsteg som gjorts. `publishing/fix-epub-after-pandoc.py` kan användas efter Pandoc för att göra `nav.xhtml` icke-linjär i spine, behålla navigeringsindexet i EPUB-läsaren och neutralisera sidbrytningar på kapitelrubriker.
 
 ## Kapitelrubriker för manus och export
 Kapitelfiler ska ha en enkel H1-rubrik i formen:
@@ -114,7 +115,7 @@ Använd alltså bara numret i kapitelrubrikens nummerdel, inte ordet ”Kapitel�
 Kapitelrubrik
 ```
 
-Radavstånd och marginaler ska vara kompakta: lite luft ovanför, lite luft mellan nummer och rubrik och inte onödigt stort avstånd under rubriken. I innehållsförteckningen ska samma kapitel visas som `1. Kapitelrubrik`.
+Rubrikraderna ska vara tydliga men kompakta. I EPUB bör `.chapter-number` vara cirka `font-size: 1.45em` och `.chapter-title` cirka `font-size: 1.30em`. Marginaler bör vara ungefär `h1 margin-top: 0.8em`, `h1 margin-bottom: 0.35em`, `.chapter-number margin-bottom: 0.08em` och `.chapter-title margin-bottom: 0.20em`. I innehållsförteckningen ska samma kapitel visas som `1. Kapitelrubrik`.
 
 ## Chattsvar vid filbaserat romanskrivande
 När projektfiler finns eller skapas ska Romanskaparen normalt arbeta filbaserat:
@@ -132,7 +133,7 @@ När användaren ber om EPUB, PDF eller liknande export:
 2. Använd endast godkända/färdiga kapitel om projektstatus anger detta.
 3. Om statusfiler och faktiska kapitelfiler skiljer sig, använd kapitelfilerna som källa men rapportera avvikelsen.
 4. Ändra inte kapiteltexter under export om användaren inte uttryckligen ber om redigering.
-5. Skapa EPUB/PDF med Pandoc när miljön stödjer det och använd mallarna i `publishing/`.
+5. Skapa EPUB/PDF med Pandoc när miljön stödjer det och använd mallarna i `publishing/`. För EPUB ska Pandoc skapa navigeringsindex/TOC, normalt med `--toc --toc-depth=1` eller motsvarande metadata.
 6. Skapa EPUB/PDF som separata nedladdningsfiler. De behöver normalt inte packas in i romanprojektets zip om inte användaren ber om det.
 7. Uppdatera projektzipen endast med exportmetadata, till exempel `exports/README.md`, `exports/exportlogg.md`, `publishing/build-notes.md`, `projektstatus.md` och `project-index.md`.
 8. Skriv exportdatum, format, inkluderade kapitel och filnamn i exportloggen.
@@ -142,10 +143,12 @@ När användaren ber om EPUB, PDF eller liknande export:
 ## EPUB-standard
 - Omslag ska vara första sidan när omslag finns.
 - Titelsida ska vara separat och inte ingå i TOC.
-- EPUB ska ha navigerbar TOC, men synlig innehållsförteckning i bokflödet ska bara skapas om användaren uttryckligen önskar det.
+- EPUB ska ha navigerbar TOC/index i EPUB-läsaren, men synlig innehållsförteckning i bokflödet ska bara skapas om användaren uttryckligen önskar det. Skapa därför inte en egen Markdown-sida/sektion med rubriken `Innehållsförteckning` för EPUB-standardexport.
+- Om Pandoc skapar `nav.xhtml` ska den finnas kvar i EPUB-manifestet med nav-egenskap så EPUB-läsaren får ett index. Om `nav.xhtml` ligger i spine/bokflödet ska den normalt sättas till `linear="no"`; ta bara bort spine-posten om du har kontrollerat att läsarens navigeringsindex fortfarande finns.
 - TOC ska normalt bara innehålla översta rubriknivån.
 - Kapitelnoteringar, arbetsloggar och romanbibel ska aldrig exporteras som bokinnehåll.
 - Kapitelrubriker ska visas centrerat enligt standarden ovan och utan tom startsida före varje kapitel.
+- I EPUB-CSS får kapitelrubriken inte ha `page-break-before: always` eller `break-before: page`, eftersom varje kapitel redan ligger i egen XHTML-fil och sådana regler kan göra att TOC-länkar öppnar en tom sida före kapitlet.
 
 ## PDF-standard
 - PDF ska efterlikna EPUB-layouten så långt möjligt.
@@ -167,6 +170,8 @@ För att minska variation mellan olika exporttillfällen ska Romanskaparen allti
 - Bevara kodblock som kodblock.
 - Kontrollera att innehållsförteckningen visar `1. Kapitelrubrik` medan kapitelstarten visar numret och rubriken på två separata centrerade rader.
 - Kontrollera att innehållsförteckning, kapitelrubriker och scenavdelare renderas konsekvent.
+- Kontrollera att det inte finns en synlig TOC-sida i bokflödet om användaren inte bett om det, men att EPUB-läsarens navigerings-TOC/index fortfarande finns.
+- Kontrollera att TOC-länkar går direkt till kapiteltextens första sida och inte till en tom sida.
 
 ## Enkel exportkontroll
 Innan slutlig EPUB/PDF levereras ska Romanskaparen kontrollera:
@@ -175,6 +180,8 @@ Innan slutlig EPUB/PDF levereras ska Romanskaparen kontrollera:
 - Om något kapitelnummer saknas
 - Om titel, undertitel och författare finns
 - Om rå markdown ser ut att återstå i exportunderlaget
+- Om `nav.xhtml` råkat hamna som synlig sida i spine, och i så fall sätt `linear="no"` utan att ta bort EPUB-läsarens navigeringsindex
+- Om EPUB-CSS innehåller `page-break-before: always` eller `break-before: page` på kapitelrubriker
 - Om exportloggen ska uppdateras i projektzipen
 
 ## Rekommenderat project-index.md

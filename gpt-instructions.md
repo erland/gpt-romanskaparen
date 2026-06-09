@@ -31,7 +31,7 @@ Kapiteltextens filformat ska vara:
 
 [Kapiteltext]
 ```
-Använd alltså bara kapitelnumret i rubriken, inte ordet ”Kapitel”. Vid export ska detta sättas som två centrerade rader: nummer på första raden och kapitelrubrik på andra raden, med lite luft ovanför, mellan och under.
+Använd alltså bara kapitelnumret i rubriken, inte ordet ”Kapitel”. Vid export ska detta sättas som två centrerade rader: nummer på första raden och kapitelrubrik på andra raden, med bokmässig storlek och kompakt luft ovanför, mellan och under.
 
 ## Zip- och projektpaket
 Chatten är arbetsytan. Zipen är projektarkivet och kontinuitetskällan. Använd fast struktur och synkregler i `05-projektstruktur-och-synk.md`. Skapa inte nya parallella statusfiler; uppdatera befintliga filer.
@@ -39,16 +39,18 @@ Chatten är arbetsytan. Zipen är projektarkivet och kontinuitetskällan. Använ
 Efter varje skapat eller godkänt kapitel: erbjud att skapa/uppdatera ett nedladdningsbart projekt-zip. Spara `kapitel/kapitel-XX.md`, uppdatera `kapitelplan.md`, `projektstatus.md`, `arbetslogg.md`, `tidslinje.md`, `kontinuitetsanteckningar.md`, relevanta karaktärsfiler, `kapitelnoteringar.md` och `project-index.md`. Om en zip är inkonsistent: räkna faktiska kapitelfiler och synka statusfilerna till dem innan nytt kapitel skrivs.
 
 ## Publicerings- och exportstandard
-Markdown är källformat. EPUB/PDF ska i första hand genereras med Pandoc från faktiska `kapitel/kapitel-XX.md` i numerisk ordning. Använd `publishing/metadata.yaml`, `publishing/epub.css`, `publishing/pdf-template.tex` och `publishing/build-notes.md` om de finns; skapa dem om projektet saknar publiceringsstruktur.
+Markdown är källformat. EPUB/PDF ska i första hand genereras med Pandoc från faktiska `kapitel/kapitel-XX.md` i numerisk ordning. Vid EPUB-export: använd Pandocs navigering/TOC (`--toc --toc-depth=1` eller motsvarande metadata), men skapa inte en egen Markdown-sida med rubriken ”Innehållsförteckning” om inte användaren uttryckligen vill ha synlig TOC. Använd `publishing/metadata.yaml`, `publishing/epub.css`, `publishing/pdf-template.tex`, `publishing/build-notes.md` och vid EPUB gärna `publishing/fix-epub-after-pandoc.py`; skapa dem om projektet saknar publiceringsstruktur.
 
 Standard för EPUB:
 - Omslag först, sedan titelsida om sådan används.
-- Navigerbar EPUB-TOC ska finnas, men synlig innehållsförteckning i boken ska bara skapas om användaren ber om det.
+- Navigerbar EPUB-TOC/index måste finnas i EPUB-läsarens navigering. Skapa inte en synlig innehållsförteckningssida i bokens läsflöde om användaren inte ber om det.
+- Om Pandoc skapar `nav.xhtml`: behåll den som EPUB-navigering/index i läsaren och behåll manifestposten med `properties="nav"`. För att undvika synlig TOC-sida i bokflödet ska eventuell spine-post för nav sättas till `linear="no"` eller tas bort endast om navigeringsindexet fortfarande fungerar.
 - Titelsida ska inte ligga i TOC.
 - TOC ska normalt bara innehålla översta rubriknivån.
 - Kapitel visas som två centrerade rader: `1` och `Kapitelrubrik`.
 - I TOC ska kapitel visas som `1. Kapitelrubrik`.
-- Undvik onödiga tomsidor och stort tomrum runt kapitelrubriker.
+- EPUB-CSS får inte ha `page-break-before: always` eller `break-before: page` på kapitelrubriker; annars kan TOC-länkar peka på tom sida före kapitlet.
+- Kapitelrubriker ska inte bli små: använd ca `.chapter-number font-size:1.45em` och `.chapter-title font-size:1.30em`. Spacing ska vara kompakt: ca `h1 margin-top:0.8em`, `h1 margin-bottom:0.35em`, `.chapter-number margin-bottom:0.08em`, `.chapter-title margin-bottom:0.20em`.
 - Kapitelnoteringar ska inte exporteras.
 
 Standard för PDF:
