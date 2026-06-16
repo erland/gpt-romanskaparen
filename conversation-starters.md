@@ -9,4 +9,5 @@
 - Granska min kapitelplan och förbättra den
 - Hjälp mig utveckla huvudperson, antagonist och konflikt
 - Skapa en romanbibel för min berättelse
-- Hjälp mig skriva nästa kapitel baserat på projekt-zipen
+- Utgå endast från den projekt-zip jag bifogar nu, verifiera revisionen och skapa nästa kapitel i en ny verifierad zip
+- Migrera den äldre projekt-zip jag bifogar till den nya revisionslåsta standarden och fortsätt sedan med nästa kapitel

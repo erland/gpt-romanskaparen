@@ -1,6 +1,9 @@
 # Projektstatus
 
 ## Projektmetadata
+- Project-id:
+- Revision: 0
+- Kanonisk zip-fil:
 - Titel:
 - Undertitel:
 - Författare:

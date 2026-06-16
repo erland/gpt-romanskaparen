@@ -20,28 +20,46 @@ Katalogen `knowledge/` är borttagen. Den innehöll bara delkällor till de hops
 
 ## Rekommenderad uppladdning
 
-Ladda upp dessa fem filer från `knowledge-upload/`:
+Ladda upp dessa fem filer från `knowledge-upload/` samt den samlade projektmallen:
 
 ```text
-01-arbetsflode-och-nyborjarstod.md
-02-berattelsehantverk.md
-03-karaktarer-varld-och-kontinuitet.md
-04-genreguider.md
-05-projektstruktur-och-synk.md
+knowledge-upload/01-arbetsflode-och-nyborjarstod.md
+knowledge-upload/02-berattelsehantverk.md
+knowledge-upload/03-karaktarer-varld-och-kontinuitet.md
+knowledge-upload/04-genreguider.md
+knowledge-upload/05-projektstruktur-och-synk.md
+project-template-bundle.md
 ```
 
-Det håller GPT:n långt under gränsen på 20 knowledge-filer. Kopiera `gpt-instructions.md` till Instructions-fältet.
+`project-template-bundle.md` är obligatorisk i den filsäkra versionen eftersom den innehåller den exakta mallen för `project-manifest.json` och hela `scripts/project_integrity.py`. Kopiera `gpt-instructions.md` till Instructions-fältet. De detaljerade säkerhets- och kommandoreglerna ligger i `knowledge-upload/05-projektstruktur-och-synk.md`.
+
+## Versionssäker filhantering
+
+Den här versionen använder ett transaktionsbaserat arbetssätt:
+
+- exakt en indata-zip väljs per arbetssteg
+- `project-manifest.json` håller project-id, revision och SHA-256-hashar
+- `revision-log.md` ger en läsbar revisionskedja
+- `scripts/project_integrity.py` stoppar oavsiktliga ändringar av andra kapitel
+- `audit-legacy` granskar äldre zippar och låser befintliga kapitelhashar innan migrering
+- varje färdig zip återöppnas och verifieras innan leverans
+- filnamn använder monotona revisioner, exempelvis `roman-r0012-kapitel-12.zip`
+
+Det viktigaste praktiska användarbeteendet är att bifoga eller namnge den exakta senaste projekt-zipen i varje meddelande som ska ändra projektet. GPT:n ska avbryta i stället för att gissa när källan är oklar eller inte åtkomlig.
+
+### Äldre projektzippar
+En zip från en tidigare GPT-version får fortsätta användas när den saknar manifest men är internt entydig. Romanskaparen ska då först auditera zipen, bevara samtliga befintliga kapitel byte-identiskt och skapa `r0001-migrerad` som separat baslinjetransaktion. Ett projekt där manifestet finns men är trasigt får däremot inte behandlas som legacy eller initieras om; det kräver en uttrycklig reparation eller avbrott.
 
 ## Viktiga beteenderegler
 
 Romanskaparen ska:
 
-- erbjuda att skapa projekt-zip när ett nytt projekt startas eller större ändringar gjorts
+- alltid skapa en ny verifierad projekt-zip när en filbaserad ändring ska sparas
 - vid filbaserat arbete normalt inte visa hela kapiteltexten i chatten
 - i stället visa ändrade filer, kort sammanfattning, kontinuitetsnoteringar och nästa steg
 - spara kapiteltext i `kapitel/kapitel-XX.md`
 - spara kapitelnoteringar i `kapitelnoteringar.md`, inte i kapitelfilerna
-- hålla `kapitelplan.md`, `projektstatus.md`, `arbetslogg.md`, `tidslinje.md`, `kontinuitetsanteckningar.md` och `project-index.md` synkade
+- hålla `project-manifest.json`, `revision-log.md`, kapitel- och statusfiler synkade samt hashverifiera alla oförändrade kapitel
 
 Visa full kapiteltext i chatten bara när användaren uttryckligen ber om det eller när inget projektpaket används.
 

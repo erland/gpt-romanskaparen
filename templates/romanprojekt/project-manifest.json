@@ -1,0 +1,26 @@
+{
+  "canonical_zip_name": "ERSATT-VID-PROJEKTSKAPANDE.zip",
+  "chapters": {
+    "count": 0,
+    "first": null,
+    "hashes": {},
+    "latest": null,
+    "missing": []
+  },
+  "created_at": "ERSATT-VID-PROJEKTSKAPANDE",
+  "last_operation": {
+    "changed_files": [],
+    "description": "Kör scripts/project_integrity.py init när projektet skapas",
+    "source_revision": null,
+    "source_zip_name": null,
+    "type": "template"
+  },
+  "migration": null,
+  "parent_revision": null,
+  "project_id": "TEMPLATE-ERSATT-MED-UUID",
+  "project_slug": "ersatt-med-projektnamn",
+  "revision": 0,
+  "schema_version": 1,
+  "tracked_files": {},
+  "updated_at": "ERSATT-VID-PROJEKTSKAPANDE"
+}

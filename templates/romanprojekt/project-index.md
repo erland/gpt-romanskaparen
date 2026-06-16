@@ -1,6 +1,10 @@
 # Project Index
 
 ## Projekt
+- Project-id:
+- Revision: 0
+- Källrevision: ingen
+- Kanonisk zip-fil:
 - Titel:
 - Undertitel:
 - Författare:
@@ -13,12 +17,13 @@
 ## Kapitelinventering
 | Kapitel | Fil | Titel | Status |
 |---|---|---|---|
-| 1 | kapitel/kapitel-01.md |  | Ej skrivet |
 
 ## Kanoniska projektfiler
 | Fil | Syfte | Status |
 |---|---|---|
 | README.md | Start och arbetsflöde | OK |
+| project-manifest.json | Revision, filinventering och SHA-256 | Ej initierad |
+| revision-log.md | Levererade revisioner | OK |
 | roman-bibel.md | Centrala fakta | OK |
 | synopsis.md | Handlingsöversikt | OK |
 | kapitelplan.md | Kapitelplan och status | OK |
@@ -34,6 +39,12 @@
 | kapitel/kapitelmall.md | Kapitelmall | OK |
 | exports/README.md | Exportinformation | OK |
 | exports/exportlogg.md | Logg över genererade exporter | OK |
+| scripts/project_integrity.py | Deterministisk integritetskontroll | OK |
+
+## Integritetskontroll
+- Manifest verifierat: Nej, initiera vid projektskapande
+- Oförändrade kapitel hashverifierade: Ej tillämpligt
+- Senaste verifieringsresultat:
 
 ## Synkkontroll
 - Kapitel i `kapitel/`: 0

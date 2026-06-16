@@ -1,5 +1,7 @@
 # Romanprojekt
 
+Detta projekt använder revisionslås, manifest och SHA-256-kontroll för att skydda kapitelversionerna.
+
 Detta är projektarkivet för en roman som utvecklas steg för steg.
 
 ## Metadata att fastställa tidigt
@@ -19,6 +21,22 @@ Detta är projektarkivet för en roman som utvecklas steg för steg.
 6. Justera kapitlet tills användaren är nöjd.
 7. Uppdatera projektfilerna och projektstatus.
 8. Fortsätt med nästa kapitel, revision eller export.
+
+## Säker filhantering
+
+- `project-manifest.json` anger projekt-id, revision och hash för varje fil.
+- `revision-log.md` visar levererade revisioner.
+- `scripts/project_integrity.py` verifierar projektet före och efter ändringar.
+- Verktygets `audit-legacy`-läge granskar äldre manifestlösa zippar innan migrering.
+- Varje nytt arbetssteg ska utgå från exakt en uttryckligen vald projekt-zip.
+- En ändring är inte sparad förrän en ny verifierad zip-revision har levererats.
+
+Grundkommandon:
+
+```bash
+python scripts/project_integrity.py verify .
+python scripts/project_integrity.py status .
+```
 
 ## Viktiga filer
 - `projektstatus.md` visar nuvarande fas, senaste godkända kapitel och nästa rekommenderade steg.
