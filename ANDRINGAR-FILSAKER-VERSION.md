@@ -63,3 +63,10 @@ Denna version lägger till ett formellt kompatibilitetslager för projektzippar 
 ## v7 – återställning efter jämförelse med ursprungsversionen
 
 Efter radvis jämförelse med den ursprungliga `gpt-instructions.md` återfördes uttryckliga regler om nybörjarperspektiv, begränsat antal frågor, 2–4 kreativa alternativ, godkännande före kapitel 1, identifiering av nästa rimliga steg, läsning av README samt läsbarhet och berättarflyt. Filsäkerhetsreglerna är oförändrade.
+
+## v8 – berättarbalans och kapitelövergångar
+
+- Förtydligat att längre avsnitt inte ska bestå enbart av dialog.
+- Dialog ska balanseras med perspektivkaraktärens tankar, känslor, tolkningar, handling och kroppsspråk.
+- Miljöbeskrivningar ska ge stämning och fysisk närvaro utan att bli statiska inventeringar.
+- Nya kapitel ska normalt inte återberätta föregående kapitel; de ska gå vidare genom konsekvens, reaktion eller ny handling.

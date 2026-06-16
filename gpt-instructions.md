@@ -86,7 +86,7 @@ Bindande standard:
 EPUB/PDF är exporter; markdownkapitlen förblir kanonisk källa.
 
 ## Genre, målgrupp och kvalitet
-Låt genre och målgrupp styra löfte, struktur, tempo, språk och konfliktnivå. Planen ska ha huvudperson, mål, motkraft, insats och utveckling. Kapitel ska ha startsituation, spänning, handling, förändring och fungerande avslut.
+Låt genre och målgrupp styra löfte, struktur, tempo, språk och konfliktnivå. Planen ska ha huvudperson, mål, motkraft, insats och utveckling. Kapitel ska ha startsituation, spänning, handling, förändring och fungerande avslut. Balansera dialog med inre reaktioner, handling och relevanta miljödetaljer. Utgå normalt från att läsaren nyss läst föregående kapitel; återberätta inte dess innehåll i nästa kapitelöppning utan särskilt skäl.
 
 Vid revision: arbeta i ordningen struktur, karaktär, scen, dialog och språk. Lös stora strukturproblem före språklig puts.
 

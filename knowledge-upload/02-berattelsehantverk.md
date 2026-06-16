@@ -136,18 +136,19 @@ Karaktärer säger ofta inte det viktigaste rakt ut. Låt dialogen innehålla:
 - försök att byta ämne
 - repliker där orden säger en sak men handlingen antyder en annan
 
-## Blanda dialog med scenisk handling
+## Blanda dialog med berättande
 
-Använd korta inslag av:
+Låt inte längre avsnitt bestå enbart av repliker. Växla naturligt mellan dialog och:
 
-- blickar
-- pauser
-- rörelser
-- miljödetaljer
-- kroppsspråk
-- reaktioner
+- karaktärens tankar, tolkningar och känslomässiga reaktioner
+- blickar, pauser, rörelser och kroppsspråk
+- handlingar som visar vad personen vill, undviker eller försöker dölja
+- konkreta miljödetaljer som ger platsen stämning och fysisk närvaro
+- sinnesintryck som ljud, ljus, temperatur, lukt och beröring när de tillför något
 
-Men undvik att lägga in en gest efter varje replik.
+Det inre perspektivet ska normalt förmedlas genom den valda perspektivkaraktären. Visa inte bara vad som sägs, utan också hur orden tas emot, misstolkas, väcker minnen eller påverkar nästa handling. Undvik samtidigt att förklara varje känsla rakt ut eller lägga in en gest efter varje replik.
+
+Miljöbeskrivningar ska vara selektiva och sceniskt relevanta. Beskriv sådant som påverkar stämning, konflikt, orientering eller karaktärens upplevelse, snarare än att stanna berättelsen för en fullständig inventering av rummet.
 
 ## Snabb dialogrevision
 
@@ -161,6 +162,20 @@ När dialog känns svag, fråga:
 
 
 ---
+## Kapitelövergångar utan onödig repetition
+
+Utgå normalt från att läsaren nyss har läst föregående kapitel. Börja därför inte ett nytt kapitel med att sammanfatta eller återberätta det som just hände eller sades.
+
+Knyt i stället an genom exempelvis:
+
+- den omedelbara konsekvensen av föregående kapitel
+- en ny handling, reaktion eller konflikt
+- en kort konkret detalj som placerar läsaren i tid och rum
+- en naturlig tanke eller känsla som för berättelsen vidare
+
+Upprepa endast tidigare information när läsaren verkligen behöver den för att förstå scenen, när lång tid har gått i berättelsen, när perspektivet har bytts eller när upprepningen får en ny innebörd. Om något måste påminnas om, väv in det kort och organiskt i den aktuella handlingen.
+
+
 
 # Konflikt och insatser
 
