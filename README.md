@@ -1,94 +1,64 @@
-# Romanskaparen GPT-paket
+# Romanskaparen 2.0
 
-Detta paket innehåller material för en Custom GPT som planerar, skriver, reviderar och exporterar romanprojekt steg för steg.
+Romanskaparen är en plattformsoberoende skrivpartner för att planera, skriva, revidera och exportera romanprojekt med versionssäker filhantering.
 
-## Rekommenderad GPT-konfiguration
+## Distributioner
 
-**Namn:** Romanskaparen
+### Custom GPT Edition
 
-**Beskrivning:** En guidande skrivpartner för romanprojekt. Hjälper användaren att utveckla idé, synopsis, karaktärer, kapitelplan, kapiteltext, kontinuitet, projekt-zip samt EPUB/PDF-export.
+Använd när du vill skapa en egen GPT i GPT Builder. ZIP är den garanterade lagringsformen.
 
-## Filer
+- Installation: `distributions/gpt/INSTALL.md`
+- Instruktion: `distributions/gpt/instructions.md`
+- Knowledge: sex filer i `distributions/gpt/knowledge/` samt `distributions/gpt/project-template-bundle.md`
 
-- `gpt-instructions.md` – huvudinstruktioner att klistra in i GPT Builder.
-- `conversation-starters.md` – förslag på conversation starters.
-- `knowledge-upload/` – de enda filer som normalt ska laddas upp som GPT Knowledge.
-- `templates/romanprojekt/` – mall för romanprojekt-zip.
-- `project-template-bundle.md` – samlad mallfil om du vill ladda upp projektmallen som extra knowledge-fil.
+### ChatGPT Project Edition
 
-Katalogen `knowledge/` är borttagen. Den innehöll bara delkällor till de hopslagna filerna i `knowledge-upload/` och behövs inte längre.
+Rekommenderas för långvariga romanprojekt. Skapa ett separat ChatGPT Project per roman.
 
-## Rekommenderad uppladdning
+- Installation: `distributions/project/INSTALL.md`
+- Projektinstruktion: `distributions/project/PROJECT-INSTRUCTIONS.md`
+- Startguide: `distributions/project/START-HERE.md`
+- Knowledge: sex filer i `distributions/project/knowledge/` samt `distributions/project/project-template-bundle.md`
 
-Ladda upp dessa fem filer från `knowledge-upload/` samt den samlade projektmallen:
+GitHub och andra externa lagringsformer är villkorliga. De får endast användas när den aktuella användarens miljö har verifierad läs-, skriv- och återläsningsförmåga. ZIP fungerar som säker fallback.
 
-```text
-knowledge-upload/01-arbetsflode-och-nyborjarstod.md
-knowledge-upload/02-berattelsehantverk.md
-knowledge-upload/03-karaktarer-varld-och-kontinuitet.md
-knowledge-upload/04-genreguider.md
-knowledge-upload/05-projektstruktur-och-synk.md
-project-template-bundle.md
-```
-
-`project-template-bundle.md` är obligatorisk i den filsäkra versionen eftersom den innehåller den exakta mallen för `project-manifest.json` och hela `scripts/project_integrity.py`. Kopiera `gpt-instructions.md` till Instructions-fältet. De detaljerade säkerhets- och kommandoreglerna ligger i `knowledge-upload/05-projektstruktur-och-synk.md`.
-
-## Versionssäker filhantering
-
-Den här versionen använder ett transaktionsbaserat arbetssätt:
-
-- exakt en indata-zip väljs per arbetssteg
-- `project-manifest.json` håller project-id, revision och SHA-256-hashar
-- `revision-log.md` ger en läsbar revisionskedja
-- `scripts/project_integrity.py` stoppar oavsiktliga ändringar av andra kapitel
-- `audit-legacy` granskar äldre zippar och låser befintliga kapitelhashar innan migrering
-- varje färdig zip återöppnas och verifieras innan leverans
-- filnamn använder monotona revisioner, exempelvis `roman-r0012-kapitel-12.zip`
-
-Det viktigaste praktiska användarbeteendet är att bifoga eller namnge den exakta senaste projekt-zipen i varje meddelande som ska ändra projektet. GPT:n ska avbryta i stället för att gissa när källan är oklar eller inte åtkomlig.
-
-### Äldre projektzippar
-En zip från en tidigare GPT-version får fortsätta användas när den saknar manifest men är internt entydig. Romanskaparen ska då först auditera zipen, bevara samtliga befintliga kapitel byte-identiskt och skapa `r0001-migrerad` som separat baslinjetransaktion. Ett projekt där manifestet finns men är trasigt får däremot inte behandlas som legacy eller initieras om; det kräver en uttrycklig reparation eller avbrott.
-
-## Viktiga beteenderegler
-
-Romanskaparen ska:
-
-- alltid skapa en ny verifierad projekt-zip när en filbaserad ändring ska sparas
-- vid filbaserat arbete normalt inte visa hela kapiteltexten i chatten
-- i stället visa ändrade filer, kort sammanfattning, kontinuitetsnoteringar och nästa steg
-- spara kapiteltext i `kapitel/kapitel-XX.md`
-- spara kapitelnoteringar i `kapitelnoteringar.md`, inte i kapitelfilerna
-- hålla `project-manifest.json`, `revision-log.md`, kapitel- och statusfiler synkade samt hashverifiera alla oförändrade kapitel
-
-Visa full kapiteltext i chatten bara när användaren uttryckligen ber om det eller när inget projektpaket används.
-
-## Publiceringsstandard
-
-Markdown är källformat. Projektmallen innehåller `publishing/` med metadata och sättningsregler för Pandoc-baserad EPUB/PDF-export.
-
-Kapitelfiler ska använda:
-
-```markdown
-# 1. Kapitelrubrik
-```
-
-Vid EPUB/PDF-export ska kapitelstarten visas som två centrerade, kompakta rader:
+## Arkitektur
 
 ```text
-1
-Kapitelrubrik
+core/                  kanoniska regler, kunskap och projektmall
+distributions/gpt/     genererad Custom GPT-distribution
+distributions/project/ genererad ChatGPT Project-distribution
+scripts/               bygg- och valideringsverktyg
+docs/                  arkitektur, installation och migration
 ```
 
-Innehållsförteckningen ska visa:
+Ändra normalt endast `core/` och tunna plattformsspecifika wrapperfiler. Genererade knowledge-kopior, bundles och manifest byggs från kärnan.
 
-```text
-1. Kapitelrubrik
+## Bygg och validera
+
+```bash
+python3 scripts/build_distributions.py
+python3 scripts/validate_distributions.py
 ```
 
-## Rekommenderade capabilities
+eller:
 
-- Web browsing: Av om romanen inte kräver research.
-- Canvas: På om tillgängligt.
-- Code interpreter / filskapande: På om GPT:n ska kunna skapa och uppdatera zip-filer.
-- Image generation: Valfritt för omslag och konceptbilder.
+```bash
+bash scripts/build.sh
+```
+
+GitHub Actions synkar och validerar distributionerna automatiskt.
+
+## Befintliga romanprojekt
+
+Romanskaparen 2.0 är kompatibel med verifierbara 1.x-projekt. Ett befintligt projekt ska behålla `project_id`, revisioner, kapitel, hashvärden och revisionslogg. Se `docs/migration-from-1.x.md`.
+
+## Dokumentation
+
+- `docs/architecture.md`
+- `docs/custom-gpt-edition.md`
+- `docs/chatgpt-project-edition.md`
+- `docs/migration-from-1.x.md`
+- `docs/build-and-validation.md`
+- `docs/archive/README.md`
