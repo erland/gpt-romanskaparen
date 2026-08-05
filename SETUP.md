@@ -16,7 +16,7 @@ project-template-bundle.md
 
 Kopiera innehållet i `gpt-instructions.md` till GPT:ns Instructions-fält. Conversation starters finns i `conversation-starters.md`.
 
-Fil 05 är den gemensamma bindande manualen för källval, revision, integritet, synk, migrering och export. Fil 06 är bindande för repository, brancher, commits, pull requests, samtidighet och GitHub-specifik felhantering.
+Fil 05 är den gemensamma bindande manualen för källval, revision, integritet, synk, migrering och export. Fil 06 styr repository, brancher, commits, pull requests, samtidighet, förmågetest och GitHub-specifik felhantering.
 
 ## Projektmallen
 
@@ -40,18 +40,42 @@ python scripts/build_project_template_bundle.py --check
 Aktivera:
 
 - **Code Interpreter / Data Analysis** för ZIP, SHA-256, integritetsverktyg, EPUB och PDF.
-- **GitHub connector** för att läsa och skriva privata eller publika repositoryn i GitHub-läge.
+- **GitHub-app eller anslutning med läs- och skrivrättigheter** om GitHub-läge ska användas.
 - **Image generation** vid behov för omslag.
 - **Web browsing** vid behov för research.
 
-GitHub-läget fungerar endast när GPT:n når repositoryt via användarens anslutna GitHub-konto och har nödvändiga rättigheter.
+ZIP-läget är alltid grundläget. GitHub-läget är villkorligt och får endast erbjudas när den aktuella GPT-konfigurationen faktiskt kan utföra hela GitHub-arbetsflödet.
+
+## Obligatoriskt GitHub-förmågetest
+
+Innan ett projekt migreras till GitHub eller ett GitHub-projekt skrivs ska GPT:n verifiera att den kan:
+
+1. läsa repositorymetadata och aktuell default branch
+2. läsa branchernas aktuella head-SHA
+3. bekräfta skrivbehörighet
+4. skapa eller säkert återanvända en arbetsbranch
+5. skapa eller uppdatera en fil/commit på arbetsbranchen
+6. skapa eller återanvända en pull request
+7. läsa tillbaka den publicerade committen och berörda filer
+
+Testet ska göras utan att ändra romanprojektets kanoniska innehåll, exempelvis med en neutral testfil eller i ett separat tomt testrepository.
+
+Om någon förmåga saknas ska GPT:n:
+
+- inte ändra `storage.mode` till `github`
+- inte påbörja ZIP → GitHub-migrering
+- inte påstå att GitHub-stöd finns
+- fortsätta eller erbjuda ZIP-läge
+- ange exakt vilken förmåga som saknas
+
+En anslutning som endast kan läsa GitHub räcker för analys men inte för GitHub-läge med sparade projektändringar.
 
 ## Lagringsval
 
 När projektfilerna ska skapas frågar GPT:n efter kanoniskt lagringsläge:
 
 1. Projekt-ZIP
-2. GitHub-repository
+2. GitHub-repository, endast efter godkänt förmågetest
 
 Endast ett läge får vara kanoniskt åt gången.
 
@@ -64,6 +88,8 @@ Endast ett läge får vara kanoniskt åt gången.
 - ny ZIP skapas, återöppnas och verifieras
 
 ### GitHub-läge
+
+Efter godkänt förmågetest:
 
 - användaren anger repository
 - GPT:n läser repositoryts aktuella default branch
@@ -85,7 +111,7 @@ Endast ett läge får vara kanoniskt åt gången.
 - kräva förväntad revision och explicit tillåten ändringslista
 - stoppa implicit byte av lagringsläge
 
-GitHub-branchlås, commit och PR utförs separat av GPT:n enligt fil 06.
+GitHub-förmågetest, branchlås, commit och PR utförs separat av GPT:n enligt fil 06.
 
 ## Äldre och skadade projekt
 
