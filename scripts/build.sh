@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+python3 scripts/build_distributions.py
+python3 scripts/validate_distributions.py
