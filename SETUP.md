@@ -2,7 +2,7 @@
 
 ## Obligatorisk uppladdning
 
-Ladda upp följande knowledge-filer:
+Ladda upp följande sju knowledge-filer:
 
 ```text
 knowledge-upload/01-arbetsflode-och-nyborjarstod.md
@@ -12,7 +12,6 @@ knowledge-upload/04-genreguider.md
 knowledge-upload/05-projektstruktur-och-synk.md
 knowledge-upload/06-github-arbetsflode.md
 project-template-bundle.md
-project-template-storage-v2.md
 ```
 
 Kopiera innehållet i `gpt-instructions.md` till GPT:ns Instructions-fält. Conversation starters finns i `conversation-starters.md`.
@@ -21,16 +20,20 @@ Fil 05 är den gemensamma bindande manualen för källval, revision, integritet,
 
 ## Projektmallen
 
-Ladda inte upp katalogen `templates/romanprojekt/` fil för fil. Ladda upp den samlade `project-template-bundle.md` och det tillfälliga bindande tillägget `project-template-storage-v2.md`.
+Ladda inte upp katalogen `templates/romanprojekt/` fil för fil. Ladda endast upp den samlade `project-template-bundle.md`.
 
-Tillägget har företräde för:
+Bundle-filen är deterministiskt genererad från den aktuella projektmallen och innehåller:
 
 - manifestschema 2
-- `storage`-metadata
-- ZIP/GitHub-kommandon
-- den uppdaterade integritetsverktygsversionens beteende
+- ZIP/GitHub-lagringsmetadata
+- projektstruktur och mallfiler
+- den aktuella versionen av `scripts/project_integrity.py`
 
-När bundle-filen har regenererats från den aktuella mallkatalogen kan tillägget tas bort.
+Kontrollera bundle-synk med:
+
+```bash
+python scripts/build_project_template_bundle.py --check
+```
 
 ## Capabilities och anslutningar
 
