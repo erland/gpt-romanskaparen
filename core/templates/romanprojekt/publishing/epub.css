@@ -1,0 +1,74 @@
+/* Romanskaparen EPUB-standard v4 */
+body {
+  line-height: 1.45;
+  margin: 0;
+  padding: 0;
+  widows: 2;
+  orphans: 2;
+}
+
+/* Varje kapitel ligger normalt i en egen XHTML-fil. Lägg därför INTE
+   page-break-before/break-before på kapitelrubriken i EPUB, eftersom
+   TOC-länkar då kan öppna en tom sida före kapitlet i flera läsare. */
+section.level1 > h1,
+h1.chapter-heading,
+h1 {
+  text-align: center;
+  font-weight: normal;
+  line-height: 1.08;
+  margin-top: 0.8em;
+  margin-bottom: 0.35em;
+  page-break-before: auto;
+  break-before: auto;
+}
+
+.chapter-number {
+  display: block;
+  text-align: center;
+  font-size: 1.45em;
+  letter-spacing: 0.06em;
+  line-height: 1.05;
+  margin: 0 0 0.08em 0;
+  font-weight: normal;
+}
+
+.chapter-title,
+.chapter-name {
+  display: block;
+  text-align: center;
+  font-size: 1.30em;
+  line-height: 1.12;
+  margin: 0 0 0.20em 0;
+  font-weight: normal;
+}
+
+.titlepage {
+  text-align: center;
+  margin-top: 25vh;
+}
+
+.titlepage h1,
+.titlepage .subtitle,
+.titlepage .author,
+.book-title,
+.book-subtitle,
+.book-author {
+  text-align: center;
+  text-indent: 0;
+}
+
+p {
+  margin: 0 0 0.8em 0;
+  text-indent: 0;
+}
+
+hr {
+  border: 0;
+  text-align: center;
+  margin: 1.2em 0;
+}
+
+hr::after {
+  content: "* * *";
+  letter-spacing: 0.4em;
+}
