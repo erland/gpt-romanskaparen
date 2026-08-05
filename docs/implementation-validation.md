@@ -1,8 +1,7 @@
 # Implementations- och konsistensrapport
 
 Datum: 2026-08-05  
-Branch: `development`  
-Målbranch: repositoryts default branch (`main` vid genomförandet)
+Kanonisk branch: repositoryts default branch (`main` vid genomförandet)
 
 ## Omfattning
 
@@ -22,6 +21,7 @@ Rapporten granskar införandet av GitHub som alternativt kanoniskt lagringsläge
 - testmatris
 - uppdaterad README och SETUP
 - deterministisk bundle-generator
+- regenererad schema-2-bundle
 
 ## Låsta designbeslut
 
@@ -47,6 +47,7 @@ Rapporten granskar införandet av GitHub som alternativt kanoniskt lagringsläge
 - Fil 05 styr gemensam projektintegritet och fil 06 GitHub-specifika detaljer.
 - ZIP och GitHub beskrivs som alternativa lagringslager för samma interna projektmodell.
 - Förbuden mot force push, automatisk merge och gissad kapitelmerge är konsekventa.
+- Den rekommenderade GPT-konfigurationen använder sju knowledge-filer.
 
 ### Manifest och verktyg
 
@@ -62,6 +63,8 @@ Rapporten granskar införandet av GitHub som alternativt kanoniskt lagringsläge
 - README, SETUP, project index och projektstatus använder samma begrepp för lagringsläge, repository, basbranch och arbetsbranch.
 - ZIP-export från GitHub skiljs från faktisk migrering.
 - Migreringsguiden kräver oförändrade kapitel under rent lagringsbyte.
+- `project-template-bundle.md` är regenererad från `templates/romanprojekt/` och innehåller schema 2 samt aktuell integritetsverktygsversion.
+- Övergångstillägget `project-template-storage-v2.md` är borttaget.
 
 ## Genomförd verktygsvalidering
 
@@ -74,10 +77,11 @@ Under implementationen provades:
 - init av nytt GitHub-projekt
 - validering av obligatoriska GitHub-fält
 - verify efter intern commit
+- deterministisk regenerering av `project-template-bundle.md`
 
 Resultaten var godkända i de provade scenarierna.
 
-## Kvarstående verifiering
+## Kvarstående accepteranstest
 
 Följande kräver ett separat testrepository och faktisk Custom GPT-konfiguration:
 
@@ -91,17 +95,13 @@ Följande kräver ett separat testrepository och faktisk Custom GPT-konfiguratio
 
 ## Bundle-status
 
-`project-template-bundle.md` innehåller fortfarande den äldre inbäddade integritetsverktygsversionen. Därför är `project-template-storage-v2.md` fortsatt bindande och måste laddas upp tillsammans med bundle-filen.
+Bundle-övergången är slutförd.
 
-`scripts/build_project_template_bundle.py` har lagts till för deterministisk regenerering. När generatorn körts i en vanlig Git-miljö ska:
-
-1. den genererade bundle-filen granskas
-2. `python scripts/build_project_template_bundle.py --check` ge godkänt resultat
-3. `project-template-storage-v2.md` tas bort
-4. README och SETUP förenklas till en enda bundle-fil
-
-Detta är den enda kända övergångsbegränsningen i den nuvarande PR-versionen.
+- `project-template-bundle.md` är deterministiskt regenererad.
+- Bundle-filen innehåller schema 2 och aktuell `project_integrity.py`.
+- `project-template-storage-v2.md` behövs inte längre och är borttagen.
+- `scripts/build_project_template_bundle.py --check` är den fortsatta synkkontrollen.
 
 ## Samlad bedömning
 
-Arkitekturen, instruktionerna, projektmodellen och integritetsverktyget är konsekventa för ZIP och GitHub. Lösningen är redo för connector- och Custom GPT-accepteranstest, med den dokumenterade bundle-övergången som kvarstående paketeringssteg.
+Arkitekturen, instruktionerna, projektmodellen, bundle-filen och integritetsverktyget är konsekventa för ZIP och GitHub. Lösningen är redo för connector- och Custom GPT-accepteranstest utan någon kvarstående paketeringsbegränsning.
