@@ -1,0 +1,31 @@
+{
+  "distribution": "custom-gpt",
+  "name": "Romanskaparen",
+  "version": "2.0-development",
+  "canonical_sources": {
+    "instructions": "core/instructions/romanskaparen-core.md",
+    "knowledge": "core/knowledge/",
+    "project_template": "core/templates/romanprojekt/",
+    "starters": "core/prompts/default-starters.md"
+  },
+  "artifacts": {
+    "instructions": "distributions/gpt/instructions.md",
+    "conversation_starters": "distributions/gpt/conversation-starters.md",
+    "knowledge_directory": "distributions/gpt/knowledge/",
+    "project_template_bundle": "distributions/gpt/project-template-bundle.md"
+  },
+  "limits": {
+    "instructions_max_characters": 8000,
+    "knowledge_max_files": 20,
+    "knowledge_files_used": 7
+  },
+  "capabilities": {
+    "zip": "required when file tools are enabled",
+    "code_interpreter": "required for full file workflow",
+    "image_generation": "optional",
+    "web_browsing": "optional",
+    "external_storage": "conditional after capability test"
+  },
+  "generated": false,
+  "generation_note": "Prompt 3 creates the first reviewed distribution snapshot. Prompt 5 will automate generation and validation."
+}
