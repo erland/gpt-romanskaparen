@@ -1,22 +1,65 @@
 # Projektstruktur, versionslås, synk och exportregler
 
-Detta dokument beskriver den fasta projektstrukturen samt det transaktionsbaserade arbetssätt som Romanskaparen ska använda för att aldrig blanda projektversioner eller återinföra äldre kapitel. Det är den detaljerade och bindande verkställighetsmanualen för källval, legacy-migrering, verifiering, integritetskommandon, tillåtna ändringar, revisioner, paketering, reparation och export. Huvudinstruktionen anger huvudreglerna; detta dokument anger hur de ska genomföras.
+Detta dokument är den bindande verkställighetsmanualen för Romanskaparens gemensamma projektstruktur, källval, revisioner, filintegritet, synk, migrering, reparation och export. Det gäller oavsett om projektet lagras som ZIP eller i GitHub.
+
+GitHub-specifika regler för repository, brancher, commits, pull requests och samtidighet finns i `06-github-arbetsflode.md`. Vid konflikt gäller huvudinstruktionen först, därefter denna fil och sedan fil 06 för GitHub-specifika frågor.
 
 ## Grundregel
-Det ska alltid finnas **en** kanonisk uppsättning projektfiler och **en** entydigt vald indata-revision för varje arbetssteg. Skapa inte parallella statusfiler, alternativa översikter eller tillfälliga sammanfattningsfiler med andra namn när motsvarande fast fil redan finns.
+
+Det ska alltid finnas:
+
+- exakt en kanonisk uppsättning projektfiler
+- exakt ett aktivt lagringsläge
+- exakt en entydigt vald och låst källrevision per arbetssteg
+
+Skapa inte parallella statusfiler, alternativa översikter eller tillfälliga sammanfattningsfiler när motsvarande kanonisk fil redan finns.
+
+## Kanoniskt lagringsläge
+
+Ett projekt har ett av följande kanoniska lagringslägen:
+
+- **ZIP:** en uttryckligen vald projekt-ZIP är källa och nästa verifierade ZIP är leverans.
+- **GitHub:** ett uttryckligen valt repository, projektrot, arbetsbranch och commit-SHA är källa; nästa verifierade Git-commit på arbetsbranchen är leverans.
+
+Blanda aldrig filer från ZIP, GitHub, chattext, EPUB/PDF, äldre arbetskataloger eller andra projektversioner i samma operation.
+
+Att skapa en ZIP-export från GitHub eller lägga projektet i ett repository byter inte automatiskt kanoniskt lagringsläge. Ett byte är en uttrycklig migreringsoperation.
 
 ## Begränsning som arbetsflödet måste ta höjd för
-En fil som har förekommit tidigare i chatten är inte automatiskt en säker aktuell källa. Romanskaparen får därför aldrig anta att den fil som råkar vara åtkomlig eller har det mest övertygande namnet är den senaste. Säkerheten ska komma från explicit källval, monotona revisionsnummer, manifest och hashkontroll.
 
-## Val av kanonisk indata-zip
-Före varje åtgärd som läser eller ändrar ett projekt:
-1. Välj exakt en indata-zip.
-2. Prioritera den zip som användaren uttryckligen bifogat eller namngivit i sitt aktuella meddelande.
-3. Om den namngivna zipen inte är åtkomlig: avbryt. Välj inte en liknande eller äldre fil som ersättning.
-4. Om flera zip-filer är bifogade utan att en pekats ut: avbryt filändringen i stället för att gissa.
-5. Använd aldrig en gammal extraherad arbetskatalog.
-6. Blanda aldrig filer från flera zip-paket, chattext, EPUB/PDF eller tidigare genererade arbetsfiler.
-7. Om användaren uttryckligen hänvisar till en högre revision än den valda zipens manifest: avbryt.
+En fil eller branch som förekommit tidigare i chatten är inte automatiskt en säker aktuell källa. Säkerheten ska komma från:
+
+- explicit källval
+- låst källversion
+- monotona revisionsnummer
+- manifest
+- filhashar
+- ny verifiering före varje ändring
+
+Romanskaparen får aldrig anta att det mest övertygande filnamnet, den senast nämnda ZIP-filen eller en tidigare läst branch fortfarande är aktuell.
+
+## Val och låsning av kanonisk projektkälla
+
+Före varje åtgärd som läser eller ändrar projektfiler ska exakt en källa väljas och låsas.
+
+### ZIP-källa
+
+1. Välj exakt en indata-ZIP.
+2. Prioritera ZIP-filen som användaren uttryckligen bifogat eller namngivit i aktuellt meddelande.
+3. Om den namngivna ZIP-filen inte är åtkomlig: avbryt.
+4. Om flera ZIP-filer är möjliga och ingen valts: avbryt.
+5. Kontrollera att användaren inte hänvisar till en högre revision än ZIP-filens manifest.
+6. Lås filnamn, storlek och SHA-256 för käll-ZIP-filen när verktyget stödjer det.
+
+### GitHub-källa
+
+1. Lås repository.
+2. Lås projektrot; i första versionen `/`.
+3. Hämta repositoryts aktuella default branch.
+4. Lås arbetsbranch.
+5. Hämta och lås aktuell head-SHA för både default branch och arbetsbranch.
+6. Läs projektfiler från exakt arbetsbranchens låsta commit-SHA.
+7. Följ därefter `06-github-arbetsflode.md`.
 
 ## Fast projektstruktur
 
@@ -41,7 +84,7 @@ romanprojekt/
     bifigurer.md
   kapitel/
     kapitelmall.md
-    kapitel-XX.md  # skapas först när kapitlet faktiskt finns
+    kapitel-XX.md
   kapitelnoteringar.md
   scripts/
     project_integrity.py
@@ -58,58 +101,51 @@ romanprojekt/
     exportlogg.md
 ```
 
+Skapa inte en `kapitel-XX.md` förrän kapitlet faktiskt finns.
+
 ## Projektmanifest och revisioner
+
 `project-manifest.json` är projektets maskinläsbara revisionslås. Det ska minst innehålla:
-- ett stabilt `project_id` som aldrig byts för samma romanprojekt
+
+- stabilt `project_id`
 - `project_slug`
 - heltalsfältet `revision`
 - `parent_revision`
 - tidsstämplar
-- det kanoniska zip-filnamnet
+- senaste operation
+- källrevision
+- ändrade filer
 - hash och filstorlek för varje spårad fil
-- separat kapitelöversikt med SHA-256 för varje `kapitel/kapitel-XX.md`
-- senaste operation, källrevision och ändrade filer
+- separat kapitelöversikt med SHA-256 för varje kanonisk kapitelfil
 
-Manifestet hashar inte sig självt. `revision-log.md` är en läsbar, append-only revisionshistorik. En ny levererad zip ska alltid ha exakt föregående revision + 1. Revisionsnummer får inte återanvändas.
+ZIP-specifika fält får finnas i ZIP-läge. GitHub-specifik lagringsmetadata läggs till när projektmallen senare stödjer detta. Ett äldre manifest utan lagringsmetadata ska fortsätta vara ett giltigt ZIP-projekt om övrig verifiering lyckas.
 
-Zip-filer ska heta exempelvis:
-- `granslinjen-r0026-kapitel-26.zip`
-- `granslinjen-r0027-revision-kapitel-04.zip`
-- `granslinjen-r0028-omslag.zip`
+Manifestet hashar inte sig självt. `revision-log.md` är append-only revisionshistorik.
 
-Använd inte ord som `ny`, `senaste`, `korrekt`, `komplett`, `uppdaterad` eller suffix som `(1)` som enda versionsidentifierare.
+Varje avslutad projektoperation ska:
+
+- utgå från exakt förväntad revision
+- öka revisionen med exakt 1
+- sätta korrekt `parent_revision`
+- använda ett revisionsnummer som aldrig återanvänds
 
 ## Deterministiskt integritetsverktyg
-Varje projekt ska innehålla `scripts/project_integrity.py`. Standardkommandon:
+
+Varje projekt ska innehålla `scripts/project_integrity.py`.
 
 ```bash
 python scripts/project_integrity.py verify .
 python scripts/project_integrity.py status .
 ```
 
-För ett äldre projekt där `project-manifest.json` saknas helt ska den aktuella skriptversionen först köras från en tillfällig katalog direkt mot zipen:
+För nästa projektversion används `commit` med:
 
-```bash
-python /tmp/project_integrity.py audit-legacy <indata.zip> \
-  --output /tmp/<projekt-slug>-legacy-audit.json
-```
+- `--expected-revision`
+- tydlig operation
+- en eller flera strikta `--allow`
+- lagringsspecifik källmetadata enligt aktuell verktygsversion
 
-Packa därefter upp exakt den auditerade zipen säkert, kopiera in den aktuella skriptversionen och skapa den första revisionslåsta baslinjen:
-
-```bash
-python scripts/project_integrity.py init . \
-  --slug <projekt-slug> \
-  --revision 1 \
-  --zip-name <projekt-slug>-r0001-migrerad.zip \
-  --source-zip-name <indata.zip> \
-  --legacy-migration \
-  --legacy-audit /tmp/<projekt-slug>-legacy-audit.json \
-  --operation "Migrerade äldre projekt till revisionslåst format"
-```
-
-`init` får aldrig köras ovanpå ett befintligt icke-mallmanifest. Om manifestet finns men är trasigt eller inte verifierar är det ett reparationsfall, inte ett legacy-fall.
-
-För att skapa nästa revision efter en ändring:
+Exempel för befintligt ZIP-flöde:
 
 ```bash
 python scripts/project_integrity.py commit . \
@@ -120,62 +156,128 @@ python scripts/project_integrity.py commit . \
   --allow '<tillåten/sökväg>'
 ```
 
-`--allow` anges en gång per fil eller globmönster som får ändras. Verktyget ska stoppa om någon annan fil har ändrats, lagts till eller försvunnit.
+`--allow` anges per fil eller globmönster som får ändras. Verktyget ska stoppa om någon annan fil har ändrats, lagts till eller försvunnit.
 
-## Filtransaktion för varje projektändring
-Följ alltid denna ordning:
+Integritetsverktyget verifierar projektets interna filer och revisioner. GitHub-API, branch-SHA, commits och pull requests hanteras av GitHub-arbetsflödet i fil 06.
+
+## Gemensam projekttransaktion
 
 ### Fas A – lås och verifiera källan
-1. Skapa en helt ny tom arbetskatalog.
-2. Packa upp endast den valda indata-zipen där.
-3. Kontrollera att zipen har exakt en projektnivå och inte innehåller flera konkurrerande projektträd.
-4. Kör `verify` innan någon fil ändras.
-5. Läs `project_id`, revision, kapitelantal, senaste kapitel och kapitelhashar.
-6. Kontrollera dubbletter: det får inte finnas flera filer som representerar samma kapitelnummer.
-7. Kontrollera att inga kapitel finns gömda under namn som `kapitel-04-ny.md`, `kapitel-04-old.md`, `kapitel-04(1).md` eller i reservkataloger. Sådana filer ska rapporteras och projektet repareras innan fortsatt skrivande.
+
+1. Skapa en helt ny tom arbetskatalog eller motsvarande isolerad arbetsyta.
+2. Materialisera endast den låsta källversionen där.
+3. Kontrollera att källan innehåller exakt ett projektträd.
+4. Kör `verify` före varje ändring.
+5. Läs project-id, revision, kapitelantal, senaste kapitel och kapitelhashar.
+6. Kontrollera dubbletter och icke-kanoniska kapitelkopior som `kapitel-04-ny.md`, `kapitel-04-old.md` eller `kapitel-04(1).md`.
+7. Avbryt om projektet inte kan verifieras.
+
+För ZIP packas exakt vald ZIP upp. För GitHub läses exakt låst commit enligt fil 06.
 
 ### Fas B – gör endast den beställda ändringen
-1. Skapa en explicit tillåten ändringslista innan du börjar.
-2. Vid **nytt kapitel** får en ny `kapitel/kapitel-XX.md` skapas, men inga befintliga kapitelfiler ändras.
-3. Vid **revision av kapitel X** får endast `kapitel/kapitel-XX.md` ändras bland kapitelfilerna.
-4. Vid **status-, metadata- eller exportarbete** får inga kapitelfiler ändras om användaren inte uttryckligen har begärt textredigering.
-5. Vanliga synkfiler får ändras endast när åtgärden kräver det: `kapitelplan.md`, `projektstatus.md`, `arbetslogg.md`, `tidslinje.md`, `kontinuitetsanteckningar.md`, karaktärsfiler, `kapitelnoteringar.md`, `project-index.md`, publicerings- och exportfiler.
-6. Kopiera aldrig tillbaka ett kapitel från en annan zip eller från chatten för att "fylla ett hål".
 
-### Fas C – commit och kontroll av oförändrade kapitel
-1. Kör `status` och granska väntande ändringar.
-2. Kör `commit` med `--expected-revision` och strikt `--allow`-lista.
-3. Commit ska öka revisionen exakt med 1 och uppdatera manifest och revisionslogg.
-4. Alla kapitelfiler utanför den uttryckligen tillåtna målfilen måste ha samma SHA-256 som i indata-revisionen.
-5. Om ett oförändrat kapitel har annan hash: avbryt och leverera ingen zip.
+1. Skapa en explicit tillåten ändringslista innan arbetet börjar.
+2. Vid nytt kapitel får en ny `kapitel/kapitel-XX.md` skapas, men inga befintliga kapitelfiler ändras.
+3. Vid revision av kapitel X får endast `kapitel/kapitel-XX.md` ändras bland kapitelfilerna.
+4. Vid status-, metadata-, omslags- eller exportarbete får kapitelfiler inte ändras utan uttrycklig beställning.
+5. Vanliga synkfiler ändras endast när operationen kräver det.
+6. Kopiera aldrig in ett kapitel från annan ZIP, branch, export eller chattext för att fylla ett hål.
 
-### Fas D – paketera och verifiera leveransen
-1. Skapa zipen från hela den nya projektkatalogen, inte från en blandning av gamla och nya filer.
-2. Packa upp den färdiga zipen i ytterligare en ny tom kontrollkatalog.
-3. Kör `python scripts/project_integrity.py verify .` i kontrollkatalogen.
-4. Kontrollera antal kapitel, första/sista kapitel, saknade nummer och att zip-filnamnet stämmer med manifestet.
-5. Leverera endast om kontrollen är godkänd.
+Vanliga synkfiler:
 
-## Leveranskvittens i chatten
-Efter varje uppdaterad projekt-zip ska svaret innehålla:
-- vald indata-zip
+- `kapitelplan.md`
+- `projektstatus.md`
+- `arbetslogg.md`
+- `tidslinje.md`
+- `kontinuitetsanteckningar.md`
+- `karaktarer/*.md`
+- `kapitelnoteringar.md`
+- `project-index.md`
+- publicerings- och exportfiler
+
+### Fas C – intern commit och kapitelskydd
+
+1. Kör `status`.
+2. Granska alla väntande ändringar.
+3. Kör projektets interna `commit` med förväntad revision och strikt tillåten ändringslista.
+4. Kontrollera att revisionen ökade exakt med 1.
+5. Kontrollera att manifest och revisionslogg uppdaterades.
+6. Alla kapitelfiler utanför uttryckligen tillåten målfil ska ha samma SHA-256 som i källrevisionen.
+7. Avbryt om ett skyddat kapitel har ändrats.
+
+### Fas D – spara i valt lagringslager
+
+#### ZIP
+
+1. Paketera hela projektkatalogen.
+2. Använd revisionsbaserat filnamn.
+3. Packa upp färdig ZIP i ytterligare en tom kontrollkatalog.
+4. Kör `verify` där.
+5. Leverera endast godkänd ZIP.
+
+#### GitHub
+
+1. Kontrollera branch-SHA:n på nytt enligt fil 06.
+2. Publicera endast som fast-forward från förväntad head.
+3. Skapa Git-commit på arbetsbranchen.
+4. Skapa eller uppdatera PR mot default branch.
+5. Läs tillbaka filer från nya commit-SHA:n.
+6. Kör slutverifiering mot den sparade GitHub-versionen.
+
+## Synkpassering efter kapitelarbete
+
+Efter varje skapat, reviderat eller godkänt kapitel:
+
+1. Spara endast berättelsetext i `kapitel/kapitel-XX.md`.
+2. Spara redaktionella noteringar i `kapitelnoteringar.md`.
+3. Uppdatera kapitlets rad i `kapitelplan.md`.
+4. Lägg till nästa planerade kapitel om planen vuxit.
+5. Uppdatera `projektstatus.md`.
+6. Lägg exakt en ny post i `arbetslogg.md`.
+7. Uppdatera `tidslinje.md` med romanens interna händelser.
+8. Uppdatera `kontinuitetsanteckningar.md` och vid behov karaktärsfiler.
+9. Uppdatera `project-index.md`.
+10. Kör intern commit med kapitelskydd.
+11. Spara och slutverifiera enligt aktivt lagringsläge.
+12. Lämna revisionskvittens.
+
+## Leveranskvittens
+
+### ZIP-läge
+
+Svaret ska innehålla:
+
+- vald indata-ZIP
 - källrevision
 - ny revision
 - project-id
-- exakt lista över ändrade filer
-- antal kapitel och senaste kapitel
-- resultat av slutverifieringen
+- ändrade filer
+- kapitelantal och senaste kapitel
+- resultat av slutverifiering
+- nedladdningsbar ny ZIP
 
-Detta gör det möjligt för användaren att i nästa meddelande hänvisa till ett exakt filnamn och revisionsnummer.
+### GitHub-läge
 
-## Metadata som alltid ska finnas
-Följande metadata ska hållas konsekventa i projektets kanoniska filer:
+Svaret ska innehålla:
+
+- repository och projektrot
+- basbranch och arbetsbranch
+- källcommit och ny commit
+- källrevision och ny revision
+- project-id
+- ändrade filer
+- kapitelantal och senaste kapitel
+- resultat av slutverifiering
+- PR-nummer och om PR:n skapades eller uppdaterades
+
+## Metadata som alltid ska vara konsekvent
+
 - titel
 - undertitel
 - författare
 - målgrupp
 - genre
-- status för omslagsbild
+- omslagsstatus
 - project-id och revision
 - senaste godkända kapitel
 - nästa rekommenderade steg
@@ -188,198 +290,132 @@ Minst `roman-bibel.md`, `synopsis.md`, `projektstatus.md`, `project-index.md` oc
 |---|---|
 | Maskinläsbar revision och filhashar | `project-manifest.json` |
 | Läsbar revisionshistorik | `revision-log.md` |
-| Projektets titel, undertitel, författare, genre, målgrupp, kärnidé | `roman-bibel.md` |
+| Projektfakta och kärnidé | `roman-bibel.md` |
 | Handlingsöversikt och baksidestext | `synopsis.md` |
 | Kapitelstatus och plan | `kapitelplan.md` |
-| Projektets aktuella läge och nästa steg | `projektstatus.md` |
-| Ändringshistorik för innehållsarbetet | `arbetslogg.md` |
-| Händelser i romanens interna tid | `tidslinje.md` |
-| Fasta fakta, ledtrådar, öppna trådar | `kontinuitetsanteckningar.md` |
-| Karaktärsfakta | `karaktarer/*.md` och sammanfattning i `roman-bibel.md` |
-| Filinventering, exportstatus och synkkontroll | `project-index.md` |
-| Kapitelnoteringar och uppföljning | `kapitelnoteringar.md` |
-| Publiceringsmetadata och sättningsregler | `publishing/*` |
-| Exportmetadata | `exports/exportlogg.md` |
+| Aktuellt läge och nästa steg | `projektstatus.md` |
+| Projektändringar | `arbetslogg.md` |
+| Romanens interna tid | `tidslinje.md` |
+| Fasta fakta och öppna trådar | `kontinuitetsanteckningar.md` |
+| Karaktärsfakta | `karaktarer/*.md` |
+| Filinventering och synkkontroll | `project-index.md` |
+| Kapitelnoteringar | `kapitelnoteringar.md` |
+| Publiceringsregler | `publishing/*` |
+| Exporthistorik | `exports/exportlogg.md` |
 
-## Synkpassering efter varje skapat, reviderat eller godkänt kapitel
-När projektfiler används ska en ny verifierad zip skapas i samma svar. Gör alltid detta före leverans:
-1. Spara endast berättelsetexten som `kapitel/kapitel-XX.md`. Kapitelnoteringar ska aldrig ligga i kapitelfilen.
-2. Spara kapitelnoteringar i `kapitelnoteringar.md` under separat rubrik för kapitlet.
-3. Uppdatera raden för kapitlet i `kapitelplan.md`.
-4. Lägg till nästa planerade kapitel om planen har vuxit.
-5. Uppdatera `projektstatus.md`.
-6. Lägg exakt en ny rad i `arbetslogg.md`.
-7. Uppdatera `tidslinje.md` med romanens händelser, inte projektarbetets händelser.
-8. Uppdatera `kontinuitetsanteckningar.md` och vid behov karaktärsfiler.
-9. Uppdatera `project-index.md`.
-10. Kör commit med en ändringslista som uttryckligen skyddar övriga kapitelfiler.
-11. Paketera, återöppna och verifiera zipen.
-12. Leverera zipen och en revisionskvittens.
+## Klassificera projekt före arbete
 
-## Reparera eller migrera uppladdade projekt
+- **Verifierbart modernt:** manifest finns och `verify` lyckas.
+- **Äldre manifestlöst:** manifest saknas helt; migrera från exakt låst källa.
+- **Skadat modernt:** manifest finns men är ogiltigt eller verifieringen misslyckas; reparera från entydig källa eller avbryt.
 
-### Klassificera innan arbete
-- **Verifierbart modernt projekt:** manifest finns och `verify` lyckas. Fortsätt normalt.
-- **Äldre manifestlöst projekt:** manifest saknas helt. Kör legacy-migrering.
-- **Skadat modernt projekt:** manifest finns men är ogiltigt eller verifieringen misslyckas. Kör inte `init`, ta inte bort manifestet och kalla inte projektet legacy. Reparera endast från en entydig källrevision eller avbryt.
+Kör aldrig `init` ovanpå ett befintligt icke-mallmanifest. Ta inte bort ett trasigt manifest och kalla inte projektet legacy.
 
-### Legacy-migrering av äldre zip
-1. Använd endast den explicit valda zipen.
-2. Kör `audit-legacy` mot zipen före uppackning. Auditen ska låsa källzipens SHA-256 och SHA-256 för varje kanonisk kapitelfil.
-3. Stoppa om zipen innehåller dubbla sökvägar, osäkra sökvägar, ett befintligt manifest, konkurrerande kapitelkopior eller en möjlig kapitelfil med icke-kanoniskt namn som `kapitel-04-ny.md`.
-4. Tomma/mallartade kapitel och luckor ska rapporteras och jämföras med `kapitelplan.md`, `projektstatus.md`, `arbetslogg.md` och `project-index.md`. Om dokumenten gör det oklart om ett kapitel är verkligt skapat: stoppa och begär användarens val.
-5. Packa upp den auditerade zipen säkert i en ny tom katalog. Kapiteltexterna i exakt denna zip är baslinjen; påstå inte att de är senaste utanför zipen.
-6. Lägg till den aktuella `scripts/project_integrity.py` och saknade moderna administrations-/strukturkomponenter. Befintliga kapitelfiler får inte ens normaliseras beträffande radslut, kodning eller rubrikformat under migreringen.
-7. Kör `init --legacy-migration --legacy-audit ... --revision 1`. Verktyget jämför kapitlen med auditens ursprungshashar och stoppar vid minsta avvikelse.
-8. Manifestets `migration`-objekt ska registrera källzip, källzipens hash, ursprungliga kapitelhashar, att manifest saknades och att kapitelfilerna bevarades byte-identiskt.
-9. Skapa och verifiera `<slug>-r0001-migrerad.zip`. Migreringen får bara lägga till/synka projektadministration och får inte samtidigt skriva nästa kapitel.
-10. Utför därefter användarens egentliga åtgärd som en vanlig separat commit, normalt revision 2. Om båda görs i samma svar måste revisionsloggen ändå innehålla två tydliga transaktioner.
+## Legacy-migrering i ZIP-läge
 
-### Reparera ett modernt projekt
-Ett manifest som finns men inte verifierar får inte skrivas över med `init` eller `--force`. Kontrollera först om den valda zipen själv innehåller tillräcklig information för en säker reparation. Alla reparationer ska dokumentera exakt vilka filer som återställdes eller registrerades och levereras som en separat reparationsrevision. Saknas entydig källa ska arbetet avbrytas.
+1. Lås exakt käll-ZIP och dess SHA-256.
+2. Kör `audit-legacy` före uppackning.
+3. Stoppa vid osäkra sökvägar, dubbla kapitel, konkurrerande kopior eller befintligt manifest.
+4. Packa upp säkert i tom katalog.
+5. Bevara befintliga kapitelfiler byte-identiskt.
+6. Lägg till aktuell projektstruktur och integritetsverktyg.
+7. Skapa separat baslinjerevision med `init --legacy-migration`.
+8. Registrera käll-ZIP och ursprungliga kapitelhashar.
+9. Paketera och verifiera `r0001-migrerad`.
+10. Genomför användarens egentliga ändring som separat nästa revision.
 
-## Chattsvar vid filbaserat romanskrivande
-När projektfiler finns eller skapas ska Romanskaparen normalt arbeta filbaserat:
-- Visa inte hela kapiteltexten i chatten.
+## Legacy-migrering i GitHub-läge
+
+Följ fil 06. Källan ska vara exakt repository, branch och commit-SHA. Befintliga kapitel ska bevaras byte-identiskt i baslinjerevisionen. Migreringen ska vara en separat commit och får inte samtidigt skriva nästa kapitel.
+
+## Reparera modernt projekt
+
+Ett manifest som finns men inte verifierar får inte skrivas över med `init` eller force-läge. Reparera endast från en entydig ZIP-revision eller Git-historik. Dokumentera exakt vilka filer som reparerades. Saknas entydig källa: avbryt.
+
+## Chattsvar vid filbaserat arbete
+
+- Visa normalt inte hela kapiteltexten.
 - Visa ändrade filer, kort sammanfattning, viktiga beslut, revisionskvittens och nästa steg.
-- Skapa alltid en ny verifierad projekt-zip efter kapitelarbete eller annan ändring som ska sparas.
-- Om korrekt projekt-zip saknas: avbryt filändringen; återskapa inte projektet från chatten.
-- Kapitelnoteringar ska alltid separeras från berättelsetexten.
+- En ändring räknas som sparad först efter godkänd slutverifiering i aktivt lagringsläge.
+- Kapitelnoteringar ska vara separerade från berättelsetexten.
+- Om kanonisk källa saknas eller är oklar: avbryt i stället för att rekonstruera från chatten.
 
 ## Publiceringsstandard
-Markdown är källformatet. `publishing/` innehåller återanvändbara regler för EPUB/PDF-sättning. Om katalogen saknas i ett äldre projekt ska den skapas när projektet uppdateras eller exporteras.
 
-`publishing/metadata.yaml` ska samla titel, undertitel, författare, språk, rättigheter, omslagsfil och eventuell publisher/ISBN. `publishing/epub.css` styr EPUB-layout. `publishing/pdf-template.tex` styr PDF-layout. `publishing/build-notes.md` beskriver exakt hur exporten skapades och vilka avsteg som gjorts. `publishing/fix-epub-after-pandoc.py` kan användas efter Pandoc för att göra `nav.xhtml` icke-linjär i spine, behålla navigeringsindexet i EPUB-läsaren och neutralisera sidbrytningar på kapitelrubriker.
+Markdown är kanoniskt källformat. EPUB och PDF är exporter.
 
-## Kapitelrubriker för manus och export
-Kapitelfiler ska ha en enkel H1-rubrik i formen:
+Kapitelfiler ska börja:
 
 ```markdown
 # 1. Kapitelrubrik
 ```
 
-Använd alltså bara numret i kapitelrubrikens nummerdel, inte ordet ”Kapitel”. I EPUB/PDF ska rubriken sättas som två centrerade rader:
+Använd inte ordet `Kapitel` i H1-rubriken.
+
+I EPUB/PDF ska kapitelstart visas som två centrerade, kompakta rader:
 
 ```text
 1
 Kapitelrubrik
 ```
 
-Rubrikraderna ska vara tydliga men kompakta. I EPUB bör `.chapter-number` vara cirka `font-size: 1.45em` och `.chapter-title` cirka `font-size: 1.30em`. Marginaler bör vara ungefär `h1 margin-top: 0.8em`, `h1 margin-bottom: 0.35em`, `.chapter-number margin-bottom: 0.08em` och `.chapter-title margin-bottom: 0.20em`. I innehållsförteckningen ska samma kapitel visas som `1. Kapitelrubrik`.
+TOC ska visa:
 
-## Exportregler: EPUB och PDF
-EPUB och PDF är exporter, inte romanens kanoniska källor. Kapiteltexterna i `kapitel/kapitel-XX.md` är alltid originalet.
-
-När användaren ber om EPUB, PDF eller liknande export:
-1. Läs faktiska kapitel i `kapitel/` och sortera dem numeriskt.
-2. Använd endast godkända/färdiga kapitel om projektstatus anger detta.
-3. Om statusfiler, manifest och faktiska kapitelfiler skiljer sig: avbryt exporten och reparera projektet först. Exportera inte från en inkonsekvent revision.
-4. Ändra inte kapiteltexter under export om användaren inte uttryckligen ber om redigering.
-5. Skapa EPUB/PDF med Pandoc när miljön stödjer det och använd mallarna i `publishing/`. För EPUB ska Pandoc skapa navigeringsindex/TOC, normalt med `--toc --toc-depth=1` eller motsvarande metadata.
-6. Skapa EPUB/PDF som separata nedladdningsfiler. De behöver normalt inte packas in i romanprojektets zip om inte användaren ber om det.
-7. Uppdatera projektzipen endast med exportmetadata, till exempel `exports/README.md`, `exports/exportlogg.md`, `publishing/build-notes.md`, `projektstatus.md` och `project-index.md`.
-8. Skriv exportdatum, format, inkluderade kapitel och filnamn i exportloggen.
-9. Om EPUB/PDF inte kan skapas i aktuell miljö, skapa en samlad Markdown-export i stället och beskriv vad som saknas.
-
-
-## EPUB-standard
-- Omslag ska vara första sidan när omslag finns.
-- Titelsida ska vara separat och inte ingå i TOC.
-- EPUB ska ha navigerbar TOC/index i EPUB-läsaren, men synlig innehållsförteckning i bokflödet ska bara skapas om användaren uttryckligen önskar det. Skapa därför inte en egen Markdown-sida/sektion med rubriken `Innehållsförteckning` för EPUB-standardexport.
-- Om Pandoc skapar `nav.xhtml` ska den finnas kvar i EPUB-manifestet med nav-egenskap så EPUB-läsaren får ett index. Om `nav.xhtml` ligger i spine/bokflödet ska den normalt sättas till `linear="no"`; ta bara bort spine-posten om du har kontrollerat att läsarens navigeringsindex fortfarande finns.
-- TOC ska normalt bara innehålla översta rubriknivån.
-- Kapitelnoteringar, arbetsloggar och romanbibel ska aldrig exporteras som bokinnehåll.
-- Kapitelrubriker ska visas centrerat enligt standarden ovan och utan tom startsida före varje kapitel.
-- I EPUB-CSS får kapitelrubriken inte ha `page-break-before: always` eller `break-before: page`, eftersom varje kapitel redan ligger i egen XHTML-fil och sådana regler kan göra att TOC-länkar öppnar en tom sida före kapitlet.
-
-## PDF-standard
-- PDF ska efterlikna EPUB-layouten så långt möjligt.
-- Standardordning: omslag, titelsida, eventuell klickbar innehållsförteckning, kapitel.
-- Om användaren ber om PDF med innehållsförteckning ska den vara klickbar.
-- Kapitelrubriker ska visas centrerat enligt standarden ovan och utan onödigt stort tomrum.
-- Undvik tomma sidor mellan kapitel.
-- Tabeller ska anpassas så att de inte går utanför sidbredden.
-
-## Normalisering före export
-För att minska variation mellan olika exporttillfällen ska Romanskaparen alltid normalisera exportunderlaget före EPUB/PDF:
-- Säkerställ att titel, undertitel och författare finns med.
-- Säkerställ att kapitel är i korrekt numerisk ordning.
-- Konvertera rubriker till riktiga rubriker.
-- Säkerställ att fetstil och kursiv stil använder korrekta och balanserade markörer.
-- Säkerställ att listor har korrekt radbrytning och tomrad där det behövs.
-- Använd tabeller bara om exportverktyget stöder dem; annars skriv om dem till listor.
-- Låt inte råa markdown-markörer som `#`, `##`, `###`, `**`, `__` eller `_` ligga kvar synliga i slutdokumentet utanför kodblock.
-- Bevara kodblock som kodblock.
-- Kontrollera att innehållsförteckningen visar `1. Kapitelrubrik` medan kapitelstarten visar numret och rubriken på två separata centrerade rader.
-- Kontrollera att innehållsförteckning, kapitelrubriker och scenavdelare renderas konsekvent.
-- Kontrollera att det inte finns en synlig TOC-sida i bokflödet om användaren inte bett om det, men att EPUB-läsarens navigerings-TOC/index fortfarande finns.
-- Kontrollera att TOC-länkar går direkt till kapiteltextens första sida och inte till en tom sida.
-
-## Enkel exportkontroll
-Innan slutlig EPUB/PDF levereras ska Romanskaparen kontrollera:
-- Hur många kapitel som inkluderats
-- Första och sista inkluderade kapitel
-- Om något kapitelnummer saknas
-- Om titel, undertitel och författare finns
-- Om rå markdown ser ut att återstå i exportunderlaget
-- Om `nav.xhtml` råkat hamna som synlig sida i spine, och i så fall sätt `linear="no"` utan att ta bort EPUB-läsarens navigeringsindex
-- Om EPUB-CSS innehåller `page-break-before: always` eller `break-before: page` på kapitelrubriker
-- Om exportloggen ska uppdateras i projektzipen
-
-## Rekommenderat project-index.md
-```markdown
-# Project Index
-
-## Projekt
-- Project-id:
-- Revision:
-- Källrevision:
-- Kanonisk zip-fil:
-- Titel:
-- Undertitel:
-- Författare:
-- Senast uppdaterad:
-- Nuvarande fas:
-- Senast godkända kapitel:
-- Nästa kapitel:
-- Omslagsbild: Planerad / Skapad / Saknas
-
-## Kapitelinventering
-| Kapitel | Fil | Titel | Status | SHA-256 |
-|---|---|---|---|---|
-
-## Kanoniska projektfiler
-| Fil | Syfte | Status |
-|---|---|---|
-| project-manifest.json | Revision och filhashar | OK |
-| revision-log.md | Revisionshistorik | OK |
-| scripts/project_integrity.py | Integritetskontroll | OK |
-| README.md | Start och arbetsflöde | OK |
-| roman-bibel.md | Centrala fakta | OK |
-| synopsis.md | Handlingsöversikt | OK |
-| kapitelplan.md | Kapitelplan och status | OK |
-| projektstatus.md | Senaste status och nästa steg | OK |
-| arbetslogg.md | Projektändringar | OK |
-| tidslinje.md | Händelser i romanen | OK |
-| kontinuitetsanteckningar.md | Fakta och öppna trådar | OK |
-| kapitelnoteringar.md | Kapitelnoteringar utanför kapitelfiler | OK |
-| publishing/metadata.yaml | Publiceringsmetadata | OK |
-| publishing/epub.css | EPUB-stil | OK |
-| publishing/pdf-template.tex | PDF-mall | OK |
-| publishing/build-notes.md | Exportinstruktioner | OK |
-| exports/exportlogg.md | Exporthistorik | OK |
-
-## Integritetskontroll
-- Indata verifierad före ändring: Ja / Nej
-- Oförändrade kapitelfiler byte-identiska: Ja / Nej
-- Leveranszip återöppnad och verifierad: Ja / Nej
-- Verifierad revision:
-
-## Synkkontroll
-- Kapitel i `kapitel/`:
-- Senaste kapitel i `kapitelplan.md`:
-- Senaste kapitel i `projektstatus.md`:
-- Senaste kapitel i `arbetslogg.md`:
-- Senaste export:
-- Resultat: Synkad / Behöver repareras
+```text
+1. Kapitelrubrik
 ```
+
+### Exportregler
+
+1. Läs faktiska kapitelfiler i numerisk ordning.
+2. Använd endast godkända kapitel enligt projektstatus.
+3. Avbryt om manifest, statusfiler och faktiska kapitel inte stämmer.
+4. Ändra inte berättelsetext under export utan uttrycklig beställning.
+5. Använd `publishing/` och Pandoc när miljön stödjer det.
+6. Kapitelnoteringar och arbetsfiler får inte exporteras som bokinnehåll.
+7. Logga format, datum, inkluderade kapitel och filnamn i `exports/exportlogg.md`.
+8. Uppdatera endast export- och statusmetadata om ingen textrevision beställts.
+
+### EPUB-standard
+
+- Omslag först när det finns.
+- Separat titelsida, inte i TOC.
+- Navigerbar TOC, normalt utan synlig TOC-sida i bokflödet.
+- TOC-depth normalt 1.
+- `nav.xhtml` ska behållas som navigeringsindex; använd normalt `linear="no"` om den ligger i spine.
+- Kapitelrubriker får inte ha extra `page-break-before` som skapar tom sida.
+- Kapitelnoteringar, arbetslogg och romanbibel ska inte ingå.
+
+### PDF-standard
+
+- Standardordning: omslag, titelsida, eventuell klickbar TOC, kapitel.
+- Kapitelrubriker ska vara centrerade och kompakta.
+- Undvik tomma sidor och tabeller utanför sidbredd.
+
+### Normalisering före export
+
+- kontrollera titel, undertitel och författare
+- sortera kapitel numeriskt
+- normalisera rubriker, listor, tabeller och markdownmarkörer
+- kontrollera att ingen rå markdown återstår
+- kontrollera TOC och kapitelstart
+- kontrollera att TOC-länkar inte går till tom sida
+
+## Rekommenderad project-index
+
+`project-index.md` bör minst redovisa:
+
+- project-id
+- revision och källrevision
+- aktivt lagringsläge
+- ZIP-fil eller GitHub-repository/branch när modellen stödjer detta
+- titel, undertitel och författare
+- projektfas
+- senaste och nästa kapitel
+- omslagsstatus
+- kapitelinventering med SHA-256
+- kanoniska projektfiler
+- integritetskontroll
+- synkkontroll
+
+Fälten för lagringsmetadata införs fullt ut när projektmallen och integritetsverktyget uppdateras i ett senare implementeringssteg.

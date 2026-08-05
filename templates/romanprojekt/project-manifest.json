@@ -20,7 +20,14 @@
   "project_id": "TEMPLATE-ERSATT-MED-UUID",
   "project_slug": "ersatt-med-projektnamn",
   "revision": 0,
-  "schema_version": 1,
+  "schema_version": 2,
+  "storage": {
+    "base_branch": null,
+    "mode": "zip",
+    "project_root": "/",
+    "repository": null,
+    "working_branch": null
+  },
   "tracked_files": {},
   "updated_at": "ERSATT-VID-PROJEKTSKAPANDE"
 }
