@@ -103,64 +103,23 @@ Varje steg ska genomföras som en separat, granskningsbar commitserie på `roman
 
 ## Prompt 1 – Inventering och målarkitektur
 
+Status: **Genomförd**
+
 ### Uppdrag
 
 Inventera hela nuvarande repositoryt och skapa den slutliga arkitekturspecifikationen för Romanskaparen 2.0.
-
-### Ska omfatta
-
-- klassificera alla nuvarande filer som kärna, GPT-distribution, projektmall, dokumentation, historik eller genererad artefakt
-- identifiera duplicerade och GPT-specifika formuleringar
-- definiera kanoniska källfiler
-- definiera vilka filer som ska genereras
-- låsa slutlig katalogstruktur
-- definiera bakåtkompatibilitet med nuvarande ZIP-projekt
-- definiera hur ett ChatGPT Project per roman ska fungera
-- definiera skillnaden mellan Custom GPT Edition och Project Edition
 
 ### Leverabler
 
 - `docs/architecture.md`
 - `docs/migration-from-1.x.md` som första utkast
-- en filflyttningsmatris från nuvarande struktur till 2.0-strukturen
-
-### Ska inte göras ännu
-
-- inga stora filflyttar
-- ingen omskrivning av huvudinstruktionen
-- ingen ändring av projektmallen
-
-### Godkännandekriterier
-
-- varje nuvarande fil har en beslutad destination eller borttagningsmotivering
-- endast en kanonisk källa finns för varje regelområde
-- GPT och Project beskrivs som distributioner, inte separata produkter
+- `docs/file-movement-matrix.md`
 
 ---
 
 ## Prompt 2 – Skapa Romanskaparen Core
 
-### Uppdrag
-
-Skapa `core/` och flytta eller omarbeta gemensamma instruktioner, knowledge-filer och projektmallar till kanoniska kärnfiler.
-
-### Ska omfatta
-
-- skapa `core/instructions/romanskaparen-core.md`
-- flytta gemensamma knowledge-filer till `core/knowledge/`
-- flytta projektmallen till `core/templates/romanprojekt/`
-- ta bort direkta hänvisningar till GPT Builder ur kärnan
-- formulera verktygsregler kapacitetsbaserat: använd endast verktyg som faktiskt finns i aktuell miljö
-- behålla ZIP-lägets befintliga integritets- och revisionsmodell
-- behålla nuvarande projektformat bakåtkompatibelt
-
-### Viktigt designbeslut
-
-Kärnan ska säga ungefär:
-
-> Du är Romanskaparen. Följ kärnmanualerna och projektets kanoniska källa. Använd endast lagrings- och verktygskapaciteter som är verifierat tillgängliga i den aktuella miljön.
-
-Den ska inte säga att den är en Custom GPT eller ett ChatGPT Project.
+Status: **Genomförd**
 
 ### Leverabler
 
@@ -169,30 +128,11 @@ Den ska inte säga att den är en Custom GPT eller ett ChatGPT Project.
 - `core/templates/romanprojekt/`
 - `core/prompts/default-starters.md`
 
-### Godkännandekriterier
-
-- kärnan kan läsas utan kännedom om GPT Builder
-- ZIP-flödet är fortfarande fullständigt
-- inga regler är dubblerade mellan gamla och nya kärnfiler
-- gamla filer lämnas tillfälligt kvar eller ersätts med tydliga övergångsmarkörer tills distributionsbygget finns
-
 ---
 
 ## Prompt 3 – Custom GPT Edition
 
-### Uppdrag
-
-Skapa en komplett Custom GPT-distribution som bygger på kärnan och som garanterat fungerar i ZIP-läge.
-
-### Ska omfatta
-
-- skapa `distributions/gpt/`
-- skapa en kompakt `instructions.md` under GPT Builders gräns
-- skapa GPT-anpassade conversation starters
-- generera eller kopiera exakt de knowledge-filer som ska laddas upp
-- skapa eller generera `project-template-bundle.md`
-- dokumentera vilka capabilities som ska aktiveras
-- beskriva GitHub eller andra externa verktyg endast som villkorliga kapaciteter, inte som garanterade funktioner
+Status: **Genomförd**
 
 ### Leverabler
 
@@ -202,13 +142,15 @@ Skapa en komplett Custom GPT-distribution som bygger på kärnan och som garante
 - `distributions/gpt/project-template-bundle.md`
 - `distributions/gpt/INSTALL.md`
 - `distributions/gpt/README.md`
+- `distributions/gpt/distribution-manifest.json`
 
-### Godkännandekriterier
+### Resultat
 
-- instruktionen ryms under 8 000 tecken
-- antalet knowledge-filer är högst 20
-- ZIP-flödet fungerar utan externa anslutningar
-- inga kärnregler underhålls manuellt endast i GPT-distributionen
+- Instruktionen är kompakt och avsedd för GPT Builder.
+- Distributionen använder sex knowledge-filer plus projektbundle, totalt sju knowledge-filer.
+- ZIP-flödet fungerar utan externa anslutningar.
+- GitHub och andra externa lagringsformer är uttryckligen villkorliga.
+- Prompt 5 ska automatisera generering och validering så att distributionsartefakterna inte behöver underhållas manuellt.
 
 ---
 
@@ -246,14 +188,6 @@ Flera chattar får arbeta mot samma kanoniska romanprojekt
 - `distributions/project/knowledge/`
 - `distributions/project/project-template-bundle.md`
 
-### Godkännandekriterier
-
-- installationen kan följas utan GPT Builder
-- instruktionen fungerar som Project Instructions
-- användaren förstår att skapa ett projekt per roman
-- GitHub erbjuds endast om aktuell projektchatt faktiskt kan läsa och skriva till användarens repository
-- ZIP fungerar som fullständig fallback
-
 ---
 
 ## Prompt 5 – Bygg- och valideringsscripts
@@ -262,41 +196,12 @@ Flera chattar får arbeta mot samma kanoniska romanprojekt
 
 Automatisera genereringen av distributionsfiler från kärnan och förhindra divergens.
 
-### Ska omfatta
-
-- generalisera befintlig bundle-generator
-- skapa `scripts/build_distributions.py`
-- skapa `scripts/validate_distributions.py`
-- kontrollera GPT-instruktionens teckengräns
-- kontrollera antalet knowledge-filer
-- kontrollera att distributionsfiler motsvarar kärnkällorna
-- kontrollera att bundle motsvarar projektmallen
-- kontrollera att inga gamla filvägar finns kvar i aktiva instruktioner
-- skapa ett maskinläsbart distributionsmanifest om det behövs
-
 ### Leverabler
 
-- byggscript
-- valideringsscript
-- dokumenterade kommandon
-- regenererade GPT- och Project-distributioner
-
-### Godkännandekriterier
-
-Följande ska fungera:
-
-```bash
-python scripts/build_distributions.py
-python scripts/validate_distributions.py
-```
-
-Valideringen ska stoppa merge om:
-
-- GPT-instruktionen är för lång
-- knowledge-gränsen överskrids
-- bundle är osynkad
-- en distribution refererar till en saknad fil
-- kärn- och distributionsversioner divergerar
+- `scripts/build_project_template_bundle.py`
+- `scripts/build_distributions.py`
+- `scripts/validate_distributions.py`
+- dokumenterade bygg- och valideringskommandon
 
 ---
 
@@ -306,29 +211,13 @@ Valideringen ska stoppa merge om:
 
 Skriv om repositoryts publika dokumentation så att Romanskaparen presenteras som en produkt med flera distributionsformer.
 
-### Ska omfatta
-
-- ny rot-`README.md`
-- installationsguider för GPT och Project
-- jämförelse mellan distributionsformerna
-- rekommendation: Project Edition för långvariga romanprojekt och användarspecifika anslutningar; GPT Edition för enkel ZIP-baserad användning
-- migreringsguide från nuvarande 1.x-repository
-- guide för att flytta ett befintligt ZIP-projekt till ett ChatGPT Project utan att ändra romanprojektets interna format
-- städa eller arkivera historiska jämförelse- och ändringsdokument
-
 ### Leverabler
 
 - ny `README.md`
 - `docs/custom-gpt-edition.md`
 - `docs/chatgpt-project-edition.md`
 - färdig `docs/migration-from-1.x.md`
-- eventuellt `docs/archive/` för historiska dokument
-
-### Godkännandekriterier
-
-- en ny användare kan välja rätt distributionsform
-- installationsvägen är tydlig för både GPT och Project
-- inget dokument lovar GitHub-stöd där verktyget inte är verifierat tillgängligt
+- eventuellt `docs/archive/`
 
 ---
 
@@ -338,51 +227,12 @@ Skriv om repositoryts publika dokumentation så att Romanskaparen presenteras so
 
 Gör en fullständig kvalitetskontroll och testa båda distributionerna.
 
-### Minsta testmatris
-
-#### Gemensam kärna
-
-1. nytt romanprojekt från idé
-2. skapa projektstruktur
-3. skriv första kapitlet
-4. fortsätt från verifierad revision
-5. revidera exakt ett kapitel
-6. exportera EPUB/PDF
-7. legacy-migrera manifestlöst ZIP-projekt
-8. stoppa skadat modernt manifest
-
-#### Custom GPT Edition
-
-1. instruktion under 8 000 tecken
-2. högst 20 knowledge-filer
-3. nytt ZIP-projekt
-4. fortsatt ZIP-arbete
-5. inga antaganden om GitHub
-
-#### ChatGPT Project Edition
-
-1. installation i ett tomt ChatGPT Project
-2. ett Project per roman
-3. flera chattar med samma projektinstruktion
-4. ZIP som kanonisk källa
-5. GitHub-förmågetest när anslutning finns
-6. korrekt fallback när GitHub saknas eller bara är read-only
-7. ingen sammanblandning mellan två romanprojekt
-
 ### Leverabler
 
 - `docs/test-plan.md`
 - `docs/implementation-validation.md`
 - slutlig filinventering
 - lista över kvarstående begränsningar
-
-### Godkännandekriterier
-
-- båda distributionerna är byggda från samma kärna
-- ZIP-läget fungerar i båda
-- GitHub är uttryckligen villkorligt
-- inga aktiva dokument använder gamla, felaktiga sökvägar
-- distributionsbygget och valideringen är reproducerbara
 
 ## 5. Rekommenderad PR-strategi
 
@@ -393,35 +243,9 @@ Gör en fullständig kvalitetskontroll och testa båda distributionerna.
 3. `Add Custom GPT distribution`
 4. `Add ChatGPT Project distribution`
 5. `Automate distribution builds and validation`
-6. `Rewrite documentation for multiple editions`
+6. `Update product documentation and migration guide`
 7. `Complete Romanskaparen 2.0 validation`
 
-### Pull request
+### PR
 
-Öppna en PR från `romanskaparen-2.0` till `main` efter prompt 4, när kärnan och båda distributionerna finns. Uppdatera därefter samma PR genom prompt 5–7.
-
-## 6. Risker att bevaka
-
-### Dubblerad instruktionstext
-
-Den största arkitekturrisken är att GPT- och Project-instruktioner utvecklas separat. Därför ska distributionsfiler genereras eller byggas av tydligt avgränsade kärnblock.
-
-### Projektinstruktionernas praktiska gränser
-
-ChatGPT Projects kan ha andra praktiska begränsningar än GPT Builder. Project Edition ska därför hålla instruktionen kompakt och lägga detaljer i projektfilerna.
-
-### Kunskapsfiler kontra romanprojektfiler
-
-Romanskaparens underlagsfiler beskriver verktyget. Romanens egna filer beskriver det specifika bokprojektet. Dokumentationen måste tydligt skilja dessa två kategorier.
-
-### GitHub-tillgänglighet
-
-GitHub får aldrig behandlas som garanterat. Förmågan ska testas i den aktuella chatten innan repositoryt görs till kanonisk källa.
-
-### Bakåtkompatibilitet
-
-Nuvarande ZIP-projekt och manifest får inte behöva konverteras enbart för att Romanskaparen går från 1.x till 2.0.
-
-## 7. Rekommenderat nästa steg
-
-Nästa prompt bör vara **Prompt 1 – Inventering och målarkitektur**. Den ska utgå från denna plan, inventera repositoryt fil för fil och låsa den slutliga 2.0-strukturen innan några större flyttar görs.
+Öppna en PR från `romanskaparen-2.0` mot `main` när Prompt 4 är genomförd och både GPT Edition och Project Edition finns som sammanhängande distributionspaket.
