@@ -1,33 +1,33 @@
 {
-  "distribution": "chatgpt-project",
-  "name": "Romanskaparen Project Edition",
-  "version": "2.0-development",
+  "artifacts": {
+    "knowledge_directory": "distributions/project/knowledge/",
+    "project_instructions": "distributions/project/PROJECT-INSTRUCTIONS.md",
+    "project_template_bundle": "distributions/project/project-template-bundle.md",
+    "start_here": "distributions/project/START-HERE.md"
+  },
   "canonical_sources": {
     "instructions": "core/instructions/romanskaparen-core.md",
     "knowledge": "core/knowledge/",
     "project_template": "core/templates/romanprojekt/",
     "starters": "core/prompts/default-starters.md"
   },
-  "artifacts": {
-    "project_instructions": "distributions/project/PROJECT-INSTRUCTIONS.md",
-    "start_here": "distributions/project/START-HERE.md",
-    "knowledge_directory": "distributions/project/knowledge/",
-    "project_template_bundle": "distributions/project/project-template-bundle.md"
+  "capabilities": {
+    "code_interpreter": "required for full ZIP workflow",
+    "external_storage": "conditional after user-specific capability test",
+    "image_generation": "optional",
+    "web_browsing": "optional",
+    "zip": "required fallback when file tools are enabled"
   },
+  "distribution": "chatgpt-project",
+  "generated": true,
+  "generation_note": "Generated from canonical files under core/ by scripts/build_distributions.py.",
+  "knowledge_files_used": 7,
+  "name": "Romanskaparen Project Edition",
   "usage_model": {
-    "chatgpt_project_per_novel": true,
     "canonical_novel_project_per_chatgpt_project": 1,
+    "chatgpt_project_per_novel": true,
     "multiple_chats_supported": true,
     "project_memory_is_canonical": false
   },
-  "capabilities": {
-    "zip": "required fallback when file tools are enabled",
-    "code_interpreter": "required for full ZIP workflow",
-    "image_generation": "optional",
-    "web_browsing": "optional",
-    "external_storage": "conditional after user-specific capability test"
-  },
-  "knowledge_files_used": 7,
-  "generated": false,
-  "generation_note": "Prompt 4 creates the first reviewed Project Edition snapshot. Prompt 5 will automate generation and validation."
+  "version": "2.0-development"
 }
