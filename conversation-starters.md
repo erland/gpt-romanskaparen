@@ -12,6 +12,6 @@
 - Skapa projektet som en revisionslåst ZIP och leverera revision 0
 - Anslut mitt romanprojekt till ett GitHub-repository och använd development som arbetsbranch
 - Fortsätt på romanprojektet i GitHub-repot jag anger och skapa eller uppdatera en PR mot default branch
-- Utgå endast från den projekt-ZIP jag bifogar nu, verifiera revisionen och skapa nästa kapitel i en ny verifierad ZIP
-- Migrera den äldre projekt-ZIP jag bifogar till den nya revisionslåsta standarden och fortsätt sedan med nästa kapitel
-- Exportera den verifierade GitHub-versionen av mitt romanprojekt som en projekt-ZIP utan att byta kanoniskt lagringsläge
+- Utgå endast från projekt-ZIP-filen jag bifogar, verifiera revisionen och skapa nästa kapitel i en ny verifierad ZIP
+- Migrera den äldre projekt-ZIP-filen till revisionslåst standard och fortsätt sedan med nästa kapitel
+- Exportera den verifierade GitHub-versionen som projekt-ZIP utan att byta kanoniskt lagringsläge
