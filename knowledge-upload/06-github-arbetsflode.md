@@ -1,49 +1,66 @@
 # GitHub-arbetsflöde för romanprojekt
 
-Detta dokument är den bindande verkställighetsmanualen för Romanskaparens GitHub-läge. `knowledge-upload/05-projektstruktur-och-synk.md` styr projektets gemensamma struktur, revisioner, filintegritet, synk och export. Denna fil styr repository, brancher, commits, pull requests, samtidighet och GitHub-specifik felhantering.
+Detta är den bindande manualen för Romanskaparens GitHub-läge. `knowledge-upload/05-projektstruktur-och-synk.md` styr gemensam projektstruktur, revision, filintegritet, synk, migration och export. Denna fil styr repository, brancher, commits, pull requests, samtidighet och GitHub-specifik felhantering.
 
-Vid konflikt gäller huvudinstruktionen först, därefter fil 05 och denna fil tillsammans. För GitHub-specifika frågor har denna fil företräde framför allmänna formuleringar i fil 05.
+Vid konflikt gäller huvudinstruktionen först, därefter fil 05 och sedan denna fil för GitHub-specifika frågor.
 
 ## Grundregel
 
-GitHub är ett alternativt lagringslager för samma kanoniska romanprojekt som annars kan lagras som projekt-ZIP. GitHub ersätter inte projektets interna revisioner, manifest, filhashar, revisionslogg eller skyddsregler.
+GitHub är ett valfritt lagringslager för samma romanprojekt som annars kan lagras i projekt-ZIP. Exakt ett lagringsläge är kanoniskt åt gången. Blanda aldrig ZIP- och GitHub-filer i samma operation.
 
-Exakt ett lagringsläge är kanoniskt åt gången:
+GitHub-läge får endast användas när den aktuella GPT-konfigurationen faktiskt har de anslutningar och rättigheter som krävs. Anta aldrig att GitHub-stöd finns bara för att användaren anger ett repository.
 
-- `zip`
-- `github`
+## Obligatoriskt förmågetest
 
-Romanskaparen får aldrig blanda filer från en ZIP och ett GitHub-repository i samma projektoperation.
+Före första GitHub-migreringen eller skrivningen ska Romanskaparen verifiera:
+
+1. repositoryt kan läsas
+2. repositorymetadata och aktuell default branch kan hämtas
+3. aktuella head-SHA:n för berörda brancher kan hämtas
+4. skrivbehörighet finns
+5. en arbetsbranch kan skapas eller säkert återanvändas
+6. en fil eller commit kan skapas eller uppdateras på arbetsbranchen
+7. en pull request kan skapas eller en befintlig PR kan återanvändas
+8. den publicerade committen och berörda filer kan läsas tillbaka
+
+Förmågetestet ska genomföras utan att ändra romanprojektets kanoniska innehåll. Använd vid behov en neutral testfil eller ett separat tomt testrepository. Om detta inte kan göras säkert ska testet avbrytas.
+
+Om någon förmåga saknas:
+
+- ändra inte `storage.mode` till `github`
+- påbörja inte ZIP → GitHub-migrering
+- gör inga projektändringar i repositoryt
+- påstå inte att GitHub-stöd finns
+- erbjud fortsatt ZIP-läge
+- ange exakt vilken läs-, skriv-, branch-, commit-, PR- eller återläsningsförmåga som saknas
+
+Ett lästest är inte tillräckligt för skrivande GitHub-läge. Läsbehörighet utan säker skrivning får endast användas för analys.
 
 ## Antaganden för första versionen
 
 - Ett repository innehåller exakt ett romanprojekt.
-- Romanprojektets rot är repositoryts rot.
+- Projektroten är repositoryts rot.
 - Repositoryts aktuella default branch är basbranch.
-- Standardarbetsbranchen är `development`.
-- Användaren kan uttryckligen välja ett annat arbetsbranchnamn.
-- Romanskaparen gör projektändringar på arbetsbranchen.
-- Romanskaparen skapar eller återanvänder en pull request mot default branch.
+- Standardarbetsbranchen är `development`, om användaren inte väljer annat.
+- Projektändringar görs endast på arbetsbranchen.
+- En PR skapas eller återanvänds mot default branch.
 - Användaren ansvarar normalt för merge.
-- Romanskaparen använder aldrig force push som standard och merger aldrig automatiskt till default branch.
+- Ingen force push eller automatisk merge används.
 
 ## Aktivera GitHub-läge
 
-När projektfilerna ska skapas eller ett befintligt projekt ska anslutas ska användaren ange repository som URL eller `owner/repository`.
+Efter godkänt förmågetest anger användaren repository som URL eller `owner/repository`.
 
-Före första skrivningen ska Romanskaparen kontrollera:
+Före första projektoperationen ska Romanskaparen kontrollera:
 
-1. att repositoryt finns och kan läsas
-2. att skrivbehörighet finns
-3. repositoryts aktuella default branch
-4. aktuell head-SHA för default branch
-5. om vald arbetsbranch finns
-6. aktuell head-SHA för arbetsbranchen om den finns
-7. om en öppen pull request finns från arbetsbranchen till default branch
-8. om repositoryt är tomt eller innehåller ett romanprojekt
-9. om projektet är verifierbart modernt, äldre manifestlöst eller skadat modernt
+- repository och behörigheter
+- default branch och dess aktuella head-SHA
+- vald arbetsbranch och dess aktuella head-SHA
+- eventuell öppen PR mellan arbetsbranch och default branch
+- om repositoryt är tomt eller innehåller ett romanprojekt
+- om projektet är verifierbart modernt, äldre manifestlöst eller skadat modernt
 
-Redovisa konfigurationen:
+Redovisa minst:
 
 ```text
 Lagringsläge: GitHub
@@ -51,13 +68,12 @@ Repository: owner/repository
 Projektrot: /
 Basbranch: <default branch>
 Arbetsbranch: development
+Förmågetest: Godkänt
 ```
-
-Om endast läsbehörighet finns får projektet analyseras, men ingen ändring får beskrivas som sparad.
 
 ## Kanonisk GitHub-källa
 
-Före varje åtgärd ska exakt följande källidentitet låsas:
+Före varje åtgärd ska följande låsas:
 
 ```text
 repository
@@ -68,249 +84,140 @@ working_branch
 source_head_sha
 ```
 
-Aktuella branch-SHA:n ska hämtas från GitHub inför varje operation. Använd aldrig SHA, branchstatus eller filinnehåll enbart från tidigare chatthistorik.
+Hämta alltid aktuella SHA:n från GitHub. Använd inte branchstatus eller filinnehåll enbart från tidigare chatthistorik.
 
-Alla projektfiler som används i operationen ska läsas från exakt `source_head_sha` på arbetsbranchen. Om arbetsbranchen ännu inte finns används default branchens låsta head som källa för att skapa den.
+Alla projektfiler ska läsas från exakt `source_head_sha` på arbetsbranchen. Om arbetsbranchen saknas skapas den från exakt låst default-head.
 
-## Skapa arbetsbranch
+## Arbetsbranch och pull request
 
 Om arbetsbranchen saknas:
 
 1. läs default branchens aktuella head-SHA
 2. skapa arbetsbranchen från exakt denna SHA
-3. läs tillbaka branchens head
-4. kontrollera att den matchar förväntad SHA
-5. fortsätt först därefter
+3. läs tillbaka arbetsbranchens head
+4. kontrollera att SHA:n matchar
 
-Om arbetsbranchen redan finns får den inte flyttas, återställas eller återskapas utan analys. Den kan innehålla externa ändringar.
+En befintlig arbetsbranch får inte återställas eller återskapas utan analys. Den kan innehålla externa ändringar.
 
-## Pull request
+Efter första publicerade ändringen ska en PR finnas från arbetsbranch till default branch. Skapa inte en konkurrerande PR för samma branchpar. Nya commits uppdaterar normalt befintlig PR. Uppdatera PR-beskrivningen när den annars blir missvisande.
 
-Efter den första publicerade ändringen ska en pull request finnas från arbetsbranchen till default branch.
+## En projektoperation motsvarar normalt en commit
 
-### Ingen öppen PR finns
+En avslutad operation ska normalt ge:
 
-Skapa en PR med:
-
-- tydlig titel för den samlade förändringen
-- projektoperationens syfte
-- källrevision och ny revision
-- ändrade filer
-- verifieringsresultat
-- eventuella risker eller granskningspunkter
-
-### Öppen PR finns
-
-Skapa inte en konkurrerande PR för samma head- och base-branch. Nya commits på arbetsbranchen uppdaterar PR:n automatiskt. Uppdatera PR-beskrivningen när den annars blir missvisande eller ofullständig.
-
-### Tidigare PR är stängd eller mergad
-
-Om arbetsbranchen därefter skiljer sig från default branch och ingen öppen PR finns, skapa en ny PR.
-
-## En projektoperation motsvarar en commit
-
-En avslutad projektoperation ska normalt ge:
-
-- exakt en ökning av projektets interna revision
+- exakt en ökning av intern projektrevision
 - exakt en Git-commit
-- en strikt lista över tillåtna projektfiler
+- en explicit tillåten ändringslista
 - uppdaterat manifest och revisionslogg
 - verifierade hashvärden för oförändrade kapitel
 
-Git-commitens SHA ska redovisas i leveranskvittensen. Commitens egen SHA ska inte vara ett obligatoriskt fält i samma manifestversion, eftersom SHA:n inte finns förrän committen skapats.
+Git-SHA redovisas i revisionskvittensen men lagras inte som obligatoriskt fält i samma manifestversion.
 
 ## GitHub-transaktion
 
-### Fas A – läs repositoryt och lås källan
+### Fas A – lås källan
 
-1. verifiera repository och behörigheter
+1. verifiera repository, förmågor och behörigheter
 2. läs default branch och `base_head_sha`
 3. läs eller skapa arbetsbranch
 4. läs `source_head_sha`
-5. identifiera eventuell öppen PR
-6. lås repository, brancher och SHA:n för operationen
+5. identifiera öppen PR
+6. lås repository, brancher och SHA:n
 
 ### Fas B – verifiera projektet
 
 1. läs kanoniska filer från exakt `source_head_sha`
-2. kör projektets verifiering enligt fil 05
+2. kör verifiering enligt fil 05
 3. läs project-id, revision, kapitelantal och kapitelhashar
-4. kontrollera dubbletter och icke-kanoniska kapitelkopior
+4. kontrollera dubbletter och icke-kanoniska kopior
 5. avbryt om modernt manifest finns men inte verifierar
 
-### Fas C – planera och ändra
+### Fas C – ändra
 
 1. skapa explicit tillåten ändringslista
 2. genomför endast beställd ändring
 3. synka berörda kanoniska filer
-4. kör projektets interna commit med förväntad revision
-5. kontrollera att alla otillåtna filer är oförändrade
+4. skapa nästa interna revision med förväntad källrevision
+5. kontrollera att otillåtna filer är oförändrade
 
 ### Fas D – kontrollera samtidighet
 
-Omedelbart före GitHub-publicering:
+Omedelbart före publicering:
 
-1. läs arbetsbranchens aktuella head-SHA igen
-2. jämför den med `source_head_sha`
-3. läs default branchens aktuella head-SHA igen
-4. jämför den med `base_head_sha`
+1. läs arbetsbranchens head-SHA igen och jämför med `source_head_sha`
+2. läs default branchens head-SHA igen och jämför med `base_head_sha`
 
-Om arbetsbranchens head har ändrats får den förberedda ändringen inte publiceras ovanpå den gamla basen. Läs om, verifiera och börja om eller avbryt vid konflikt.
-
-Om endast default branch har ändrats ska reglerna nedan användas innan operationen publiceras eller nästa operation påbörjas.
+Om arbetsbranchens head ändrats får den förberedda versionen inte publiceras. Läs om och börja om eller avbryt vid konflikt.
 
 ### Fas E – publicera
 
-1. skapa Git-objekt eller filuppdateringar som motsvarar den verifierade projektversionen
-2. uppdatera arbetsbranchen endast som fast-forward från den förväntade headen
-3. skapa PR om ingen öppen PR finns
-4. annars uppdatera befintlig PR vid behov
-
-Ingen force push.
+1. publicera den verifierade projektversionen
+2. uppdatera arbetsbranchen endast fast-forward från förväntad head
+3. skapa eller återanvänd PR
+4. använd aldrig force push
 
 ### Fas F – läs tillbaka
 
-1. läs den nya commit-SHA:n från arbetsbranchen
+1. läs den nya commit-SHA:n
 2. läs tillbaka berörda filer från exakt denna commit
 3. verifiera projektet igen
-4. kontrollera ny intern revision
-5. kontrollera att PR:n har rätt head och base
-6. lämna revisionskvittens
+4. kontrollera ny intern revision och PR:ns branchpar
+5. lämna revisionskvittens
 
-Om slutverifieringen misslyckas ska felet redovisas tydligt. Romanskaparen får inte påstå att operationen är godkänd.
+Om slutverifieringen misslyckas får operationen inte beskrivas som godkänd.
 
-## Externa ändringar på arbetsbranchen
+## Externa ändringar och konflikter
 
-Arbetsbranchen är inte exklusivt ägd av Romanskaparen.
+Arbetsbranchen är inte exklusivt ägd av Romanskaparen. Om dess head ändrats före publicering:
 
-Om `source_head_sha` har ändrats före publicering:
-
-- skriv inte över ändringen
+- skriv inte över
 - använd inte force push
-- publicera inte den lokalt förberedda versionen
 - läs den nya headen
-- verifiera projektet på nytt
-- jämför ändrade filer och projektrevision
-- börja om från den nya verifierade källan om det är säkert
-- avbryt om manifest, revision eller kanoniska filer är i konflikt
+- verifiera projektet igen
+- jämför filer och projektrevision
+- börja om endast om källan fortfarande är entydig
 
-En extern commit som återanvänder revisionsnummer, bryter manifestet eller ändrar skyddade kapitel utan sammanhängande projektcommit ska behandlas som konflikt eller skadat modernt projekt.
+Jämför default branch och arbetsbranch från en tillförlitlig gemensam bas. En säker integration kan vara möjlig när ändrade filuppsättningar är disjunkta och resultatet verifierar.
 
-## Externa ändringar på default branch
+Stoppa automatisk integration om båda sidor ändrat exempelvis:
 
-Default branch kan ändras efter att arbetsbranchen skapades eller efter att en PR öppnades.
-
-Romanskaparen ska jämföra brancherna från en tillförlitlig gemensam bas.
-
-### Ingen relevant överlappning
-
-Om default branch endast ändrat filer som inte påverkar den planerade projektoperationen eller projektets revisionskedja kan ändringarna integreras i arbetsbranchen, följt av full verifiering.
-
-### Möjlig säker överlappning
-
-Om ändringarna berör projektmetadata men är entydigt förenliga får de integreras endast om:
-
-- resultatet kan verifieras
-- ingen intern revision återanvänds
-- manifest och revisionslogg förblir sammanhängande
-- inga kapitelversioner väljs eller kombineras genom gissning
-
-### Konflikt
-
-Stoppa automatisk integration om båda brancherna har ändrat exempelvis:
-
-- samma `kapitel/kapitel-XX.md`
-- `project-manifest.json` på oförenliga sätt
-- `revision-log.md` med konkurrerande revisioner
+- samma kapitelfil
+- manifestet på oförenliga sätt
+- revisionsloggen med konkurrerande revisioner
 - samma status-, tidslinje- eller kontinuitetsfakta med olika innehåll
 
-Romanskaparen får inte kreativt slå ihop två kapitelversioner utan uttryckligt uppdrag.
+Slå aldrig kreativt ihop två kapitelversioner utan uttryckligt uppdrag. Ingen hard reset, force push, radering av externa commits eller omskrivning av publicerad historik.
 
-## Båda brancherna har ändrats
+## Klassificering av projekt
 
-Jämför separat:
-
-- gemensam bas till default branch
-- gemensam bas till arbetsbranch
-
-Om ändrade filuppsättningar är disjunkta kan en säker integration vara möjlig, men resultatet måste verifieras som en ny sammanhängande projektversion.
-
-Om samma kanoniska filer har ändrats på båda sidor ska operationen normalt avbrytas och användaren få välja konfliktlösning.
-
-## Tillåtna sätt att synka default till arbetsbranch
-
-Romanskaparen får använda en vanlig merge eller annan fast-forward-säker integration om verktygsmiljön stödjer detta och resultatet kan verifieras.
-
-Följande är förbjudet som standard:
-
-- force push
-- hard reset av arbetsbranchen
-- borttagning av externa commits
-- omskrivning av publicerad historik
-- automatisk vinnare mellan två kapitelversioner
-
-Om anslutningen inte kan utföra en säker branchmerge ska Romanskaparen inte simulera den genom att kopiera ett urval filer och kalla det merge, om inte hela resultatet och revisionskedjan kan verifieras entydigt.
-
-## Klassificering av befintliga GitHub-projekt
-
-### Verifierbart modernt
-
-Manifest finns och `verify` lyckas. Fortsätt från exakt låst commit.
-
-### Äldre manifestlöst
-
-Manifest saknas helt. Legacy-migrering får genomföras från exakt låst commit. Befintliga kapitel ska bevaras byte-identiskt i baslinjerevisionen.
-
-### Skadat modernt
-
-Manifest finns men är ogiltigt eller verifieringen misslyckas. Kör inte `init`, radera inte manifestet och återställ inte godtyckligt från default branch. Reparera endast från entydig Git-historik eller avbryt.
+- **Verifierbart modernt:** manifest finns och `verify` lyckas. Fortsätt från exakt låst commit.
+- **Äldre manifestlöst:** manifest saknas helt. Legacy-migrering får ske från exakt låst commit med byte-identiska befintliga kapitel.
+- **Skadat modernt:** manifest finns men verifieringen misslyckas. Kör inte `init`, radera inte manifestet och återställ inte godtyckligt.
 
 ## Tomt repository
 
-För ett tomt repository:
+Efter godkänt förmågetest:
 
 1. fastställ default branch
 2. skapa arbetsbranch
 3. skapa projektmallen i repositoryts rot
 4. initiera intern revision
-5. verifiera alla projektfiler
+5. verifiera projektfilerna
 6. committa till arbetsbranchen
 7. läs tillbaka och verifiera
-8. skapa PR mot default branch
+8. skapa PR
 
-Om repositoryt saknar en användbar default branch och anslutningen inte kan initiera den säkert ska användaren få ett tydligt fel i stället för att Romanskaparen gissar.
+Om repositoryt saknar användbar default branch och anslutningen inte kan initiera den säkert ska GitHub-läget avbrytas och ZIP erbjudas.
 
-## GitHub till ZIP-export
+## Export och lagringsbyte
 
-När GitHub är kanonisk källa kan användaren begära en projekt-ZIP.
+En ZIP-export från GitHub är en export, inte automatiskt ett lagringsbyte. Lås exakt commit-SHA, verifiera, paketera, återöppna och slutverifiera ZIP-filen.
 
-1. fastställ om exporten ska baseras på arbetsbranch eller default branch
-2. lås exakt commit-SHA
-3. verifiera projektet
-4. paketera hela projektroten
-5. återöppna ZIP-filen i en tom kontrollkatalog
-6. kör slutverifiering
-7. leverera ZIP-filen som export eller säkerhetskopia
-
-ZIP-exporten blir inte automatiskt ny kanonisk källa.
-
-## Växla lagringsläge
-
-Växling mellan ZIP och GitHub är en explicit migreringsoperation.
-
-Den ska bevara:
-
-- project-id
-- sammanhängande revisionsnummer
-- filhashar och kapitelhashar
-- revisionslogg
-- entydig källversion
-
-Romanskaparen får inte byta lagringsläge implicit för att användaren råkar bifoga en ZIP samtidigt som ett repository är anslutet.
+Växling mellan ZIP och GitHub är en uttrycklig migrering som bevarar project-id, revisionskedja, filhashar och entydig källversion. ZIP → GitHub får endast ske efter godkänt förmågetest.
 
 ## Revisionskvittens
 
-Efter varje sparad GitHub-operation ska svaret innehålla:
+Efter en sparad GitHub-operation ska svaret innehålla:
 
 ```text
 Lagringsläge: GitHub
@@ -325,32 +232,25 @@ Ny revision: r0013
 Project-id: <id>
 Ändrade filer:
 - ...
-Kapitelantal: ...
-Senaste kapitel: ...
 Verifiering: Godkänd
 Pull request: #N, skapad eller uppdaterad
 ```
 
-Vid avbrott ska svaret ange:
+Vid avbrott ska svaret ange vilken förmåga, SHA, fil eller verifiering som blockerade skrivning och varför ingen commit publicerades.
 
-- vilken SHA som låstes
-- vilken SHA som senare upptäcktes
-- berörda filer om de kan identifieras
-- varför ingen commit publicerades
-- vad användaren behöver ta ställning till
-
-## Fel och avbrott
+## Obligatoriska avbrott
 
 Avbryt utan skrivning om:
 
+- förmågetestet inte är fullständigt godkänt
 - repositoryt är oåtkomligt
-- skrivbehörighet saknas
+- skriv-, branch-, commit-, PR- eller återläsningsförmåga saknas
 - repository, branch eller projektrot är oklar
 - arbetsbranchens head ändras under operationen
 - projektverifieringen misslyckas
 - manifestet finns men är skadat
 - samma kapitel har konkurrerande ändringar
 - revisionskedjan har divergerat
-- anslutningen inte kan garantera fast-forward-säker publicering
+- fast-forward-säker publicering inte kan garanteras
 
 Vid avbrott får inga halvfärdiga projektfiler beskrivas som sparade.
