@@ -23,9 +23,46 @@ KNOWLEDGE_FILES = [
     "05-projektstruktur-och-synk.md",
 ]
 
-BUNDLE_INTRO = """# Romanprojektmall – genererad från kanonisk mall\n\nDetta är den samlade projektmallen för Romanskaparen. Filen genereras deterministiskt från `templates/romanprojekt/`, som är projektmallens enda kanoniska källa. Redigera därför inte denna fil manuellt; ändra mallen och bygg om distributionerna i stället.\n\nMallen innehåller manifest, revisionslogg, publiceringsfiler och integritetsverktyg för versionssäker filhantering. När ett nytt projekt skapas ska `scripts/project_integrity.py init` köras innan den första zipen levereras. Äldre manifestlösa projekt ska hanteras enligt `05-projektstruktur-och-synk.md`.\n\n"""
+BUNDLE_INTRO = """# Romanprojektmall – revisionslåst version
 
-BUNDLE_FOOTER = """\n## Obligatoriskt chatt- och zip-beteende\n\n- Välj exakt en uttryckligen angiven indata-zip.\n- Avbryt om rätt zip inte är åtkomlig eller om flera kandidater är oklara.\n- Packa alltid upp i en ny tom katalog.\n- Kör `verify` före ändringar.\n- Använd strikt `--allow`-lista vid `commit`.\n- Vid nytt kapitel får inga befintliga kapitelfiler ändras.\n- Vid revision av ett kapitel får inga andra kapitelfiler ändras.\n- Skapa en ny revision, paketera hela projektet, packa upp leveranszipen och kör `verify` igen.\n- Leverera revisionskvittens tillsammans med zipen.\n"""
+Detta är den samlade projektmallen för Romanskaparen. Den innehåller manifest, revisionslogg och ett deterministiskt integritetsverktyg som skyddar befintliga kapitel mot oavsiktlig ändring eller återställning. Verktyget har även ett särskilt `audit-legacy`-läge för projektzippar skapade före manifeststandarden.
+
+När ett nytt projekt skapas ska `scripts/project_integrity.py init` köras innan den första zipen levereras. Ett äldre manifestlöst projekt ska först granskas direkt som zip med `audit-legacy`; därefter skapas en separat revisionslåst migrationsbaslinje där befintliga kapitel måste vara byte-identiska med källzipen. Därefter ska varje filbaserad ändring verifieras, committas med en explicit ändringslista och kontrolleras igen efter att zipen skapats.
+
+Mallen `kapitel/kapitelmall.md` finns från början, men inga numeriska kapitelfiler skapas förrän kapiteltexten faktiskt finns. Det förhindrar att tomma mallkapitel räknas som färdiga kapitel.
+
+"""
+
+BUNDLE_FILE_ORDER = [
+    "README.md",
+    "project-manifest.json",
+    "revision-log.md",
+    "project-index.md",
+    "arbetslogg.md",
+    "kapitelplan.md",
+    "projektstatus.md",
+    "roman-bibel.md",
+    "synopsis.md",
+    "stilguide.md",
+    "tidslinje.md",
+    "kontinuitetsanteckningar.md",
+    "revisionsonskemal.md",
+    "kapitelnoteringar.md",
+    "karaktarer/huvudperson.md",
+    "karaktarer/antagonist.md",
+    "karaktarer/bifigurer.md",
+    "kapitel/kapitelmall.md",
+    "scripts/project_integrity.py",
+    "publishing/metadata.yaml",
+    "publishing/epub.css",
+    "publishing/pdf-template.tex",
+    "publishing/build-notes.md",
+    "publishing/fix-epub-after-pandoc.py",
+    "exports/README.md",
+    "exports/exportlogg.md",
+]
+
+BUNDLE_FOOTER = """## Obligatoriskt chatt- och zip-beteende\n\n- Välj exakt en uttryckligen angiven indata-zip.\n- Avbryt om rätt zip inte är åtkomlig eller om flera kandidater är oklara.\n- Packa alltid upp i en ny tom katalog.\n- Kör `verify` före ändringar.\n- Använd strikt `--allow`-lista vid `commit`.\n- Vid nytt kapitel får inga befintliga kapitelfiler ändras.\n- Vid revision av ett kapitel får inga andra kapitelfiler ändras.\n- Skapa en ny revision, paketera hela projektet, packa upp leveranszipen och kör `verify` igen.\n- Leverera revisionskvittens tillsammans med zipen.\n"""
 
 
 def sha256(path: Path) -> str:
@@ -44,12 +81,13 @@ def language_for(path: Path) -> str:
         ".yaml": "yaml",
         ".yml": "yaml",
         ".css": "css",
-        ".tex": "tex",
+        ".tex": "latex",
     }.get(path.suffix.lower(), "text")
 
 
 def fence_for(text: str) -> str:
-    longest = 2
+    # Minst fem backticks bevarar originalbundle-formatet; väx om innehållet kräver mer.
+    longest = 4
     run = 0
     for ch in text:
         if ch == "`":
@@ -62,8 +100,28 @@ def fence_for(text: str) -> str:
 
 def render_bundle() -> str:
     parts = [BUNDLE_INTRO]
-    for path in sorted(p for p in TEMPLATE_ROOT.rglob("*") if p.is_file()):
-        rel = path.relative_to(TEMPLATE_ROOT).as_posix()
+    actual = {
+        p.relative_to(TEMPLATE_ROOT).as_posix(): p
+        for p in TEMPLATE_ROOT.rglob("*")
+        if p.is_file()
+    }
+    expected = set(BUNDLE_FILE_ORDER)
+    missing = [name for name in BUNDLE_FILE_ORDER if name not in actual]
+    extra = sorted(set(actual) - expected)
+    if missing or extra:
+        details = []
+        if missing:
+            details.append(f"saknade: {', '.join(missing)}")
+        if extra:
+            details.append(f"nya ej ordnade filer: {', '.join(extra)}")
+        raise RuntimeError(
+            "Mallens filuppsättning avviker från den revisionslåsta bundle-ordningen ("
+            + "; ".join(details)
+            + "). Uppdatera BUNDLE_FILE_ORDER medvetet innan distribution byggs."
+        )
+
+    for rel in BUNDLE_FILE_ORDER:
+        path = actual[rel]
         text = path.read_text(encoding="utf-8")
         fence = fence_for(text)
         parts.append(f"## `{rel}`\n\n{fence}{language_for(path)}\n{text.rstrip()}\n{fence}\n\n")
