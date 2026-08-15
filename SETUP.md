@@ -96,3 +96,11 @@ python3 scripts/build_distributions.py --check-bundle
 ## GitHub Actions
 
 `.github/workflows/build-distributions.yml` kör synkkontroll, bygger båda ZIP-filerna, verifierar dem och publicerar dem som workflow artifacts. När workflowet körs för en publicerad GitHub Release laddas ZIP-filerna även upp som release assets.
+
+För vanliga byggen används `VERSION`. För en publicerad release är release-taggen versionskälla. Använd taggar på formen `vMAJOR.MINOR.PATCH`, exempelvis `v1.1.0`. Workflowet validerar taggen, tar bort det inledande `v` och skickar den explicita versionen till build-scriptet. Därmed får release-assets, `VERSION` inne i båda paketen och `MANIFEST.json` samma version även om repositoryts `VERSION` fortfarande har ett äldre värde.
+
+Build-scriptet kan även köras lokalt med en explicit version för test:
+
+```bash
+python3 scripts/build_distributions.py --output-dir dist --version 1.1.0
+```
