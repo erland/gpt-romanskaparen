@@ -1,0 +1,47 @@
+name: Build Romanskaparen distributions
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Verify generated project bundle
+        run: python3 scripts/build_distributions.py --check-bundle
+
+      - name: Build distributions
+        run: python3 scripts/build_distributions.py --output-dir dist
+
+      - name: Validate distributions
+        shell: bash
+        run: python3 scripts/validate_distributions.py dist/*.zip
+
+      - name: Upload workflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: romanskaparen-distributions
+          path: dist/*.zip
+          if-no-files-found: error
+
+      - name: Attach packages to published release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" dist/*.zip --clobber

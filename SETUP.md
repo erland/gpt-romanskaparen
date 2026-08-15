@@ -53,3 +53,46 @@ Om `project-manifest.json` redan finns men är skadat eller inte verifierar ska 
 ## Export till EPUB och PDF
 
 Reglerna i `knowledge-upload/05-projektstruktur-och-synk.md` styr export. Projektmallen innehåller `publishing/metadata.yaml`, `publishing/epub.css`, `publishing/pdf-template.tex` och `publishing/build-notes.md`.
+
+
+# Portabel chat-version
+
+Repositoryt kan även bygga en ZIP som bifogas direkt i en vanlig ChatGPT-chat. Den använder samma `gpt-instructions.md`, knowledge-filer och projektmall som Custom GPT-versionen.
+
+Bygg lokalt med:
+
+```bash
+python3 scripts/build_distributions.py --output-dir dist
+python3 scripts/validate_distributions.py dist/*.zip
+```
+
+Den portabla ZIP-filen innehåller:
+
+```text
+START-HERE.md
+MANIFEST.json
+VERSION
+assistant/instructions.md
+knowledge/*.md
+templates/romanprojekt/...
+```
+
+`START-HERE.md` anger läsordning och en rekommenderad startprompt. `MANIFEST.json` innehåller paketversion, entrypoint, knowledge-lista och SHA-256 för samtliga filer i paketet.
+
+## Genererad projektbundle
+
+`project-template-bundle.md` genereras från `templates/romanprojekt/`, som är enda kanoniska källa för projektmallen. Ändra därför mallen i `templates/romanprojekt/` och kör sedan:
+
+```bash
+python3 scripts/build_distributions.py --sync-bundle
+```
+
+Kontrollera synk utan att ändra filer med:
+
+```bash
+python3 scripts/build_distributions.py --check-bundle
+```
+
+## GitHub Actions
+
+`.github/workflows/build-distributions.yml` kör synkkontroll, bygger båda ZIP-filerna, verifierar dem och publicerar dem som workflow artifacts. När workflowet körs för en publicerad GitHub Release laddas ZIP-filerna även upp som release assets.

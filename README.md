@@ -1,6 +1,37 @@
-# Romanskaparen GPT-paket
+# Romanskaparen – Custom GPT och portabel chat-version
 
-Detta paket innehåller material för en Custom GPT som planerar, skriver, reviderar och exporterar romanprojekt steg för steg.
+Detta repository innehåller samma kanoniska material för två distributionsformer av Romanskaparen: en **Custom GPT-version** och en **portabel chat-ZIP** som kan bifogas i en vanlig ChatGPT-konversation. Båda byggs från samma instruktioner, knowledge-filer och romanprojektmall.
+
+
+## Två distributionsformat
+
+Kör:
+
+```bash
+python3 scripts/build_distributions.py --output-dir dist
+```
+
+Det skapar:
+
+```text
+dist/romanskaparen-custom-gpt-v<VERSION>.zip
+dist/romanskaparen-chat-v<VERSION>.zip
+```
+
+- **Custom GPT-paketet** innehåller `gpt-instructions.md`, conversation starters och de sex knowledge-filer som ska användas i GPT Builder.
+- **Chat-paketet** innehåller `START-HERE.md`, `assistant/instructions.md`, samma knowledge-underlag, den fullständiga romanprojektmallen samt ett SHA-256-baserat `MANIFEST.json`.
+
+För den portabla versionen bifogar användaren `romanskaparen-chat-...zip` i en vanlig chat och kan skriva exempelvis: *"Använd Romanskaparen i den bifogade ZIP-filen för den här konversationen. Läs START-HERE.md först."*
+
+## Single source of truth
+
+`templates/romanprojekt/` är den kanoniska källan för romanprojektmallen. `project-template-bundle.md` är en genererad knowledge-fil och ska inte redigeras manuellt. Efter ändringar i projektmallen körs:
+
+```bash
+python3 scripts/build_distributions.py --sync-bundle
+```
+
+CI kontrollerar att bundle-filen är synkad innan distributionspaketen byggs.
 
 ## Rekommenderad GPT-konfiguration
 
@@ -14,7 +45,11 @@ Detta paket innehåller material för en Custom GPT som planerar, skriver, revid
 - `conversation-starters.md` – förslag på conversation starters.
 - `knowledge-upload/` – de enda filer som normalt ska laddas upp som GPT Knowledge.
 - `templates/romanprojekt/` – mall för romanprojekt-zip.
-- `project-template-bundle.md` – samlad mallfil om du vill ladda upp projektmallen som extra knowledge-fil.
+- `project-template-bundle.md` – genererad samlad mallfil som ska laddas upp som knowledge-fil.
+- `portable/START-HERE.md` – startinstruktion för den portabla chat-versionen.
+- `scripts/build_distributions.py` – synkar projektbundle och bygger båda distributionspaketen.
+- `scripts/validate_distributions.py` – verifierar byggda ZIP-paket.
+- `.github/workflows/build-distributions.yml` – bygger och verifierar distributionspaketen i GitHub Actions.
 
 Katalogen `knowledge/` är borttagen. Den innehöll bara delkällor till de hopslagna filerna i `knowledge-upload/` och behövs inte längre.
 
