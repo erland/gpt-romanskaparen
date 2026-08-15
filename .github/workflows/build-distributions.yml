@@ -26,8 +26,32 @@ jobs:
       - name: Verify generated project bundle
         run: python3 scripts/build_distributions.py --check-bundle
 
+      - name: Resolve build version
+        id: version
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == "release" ]]; then
+            if [[ ! "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]; then
+              echo "Release-taggen måste vara SemVer med v-prefix, exempelvis v1.1.0: $RELEASE_TAG" >&2
+              exit 1
+            fi
+            version="${RELEASE_TAG#v}"
+          else
+            version="$(tr -d '[:space:]' < VERSION)"
+          fi
+          if [[ -z "$version" ]]; then
+            echo "Kunde inte fastställa build-version." >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Bygger Romanskaparen version $version"
+
       - name: Build distributions
-        run: python3 scripts/build_distributions.py --output-dir dist
+        run: python3 scripts/build_distributions.py --output-dir dist --version "${{ steps.version.outputs.version }}"
 
       - name: Validate distributions
         shell: bash
@@ -36,7 +60,7 @@ jobs:
       - name: Upload workflow artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: romanskaparen-distributions
+          name: romanskaparen-distributions-v${{ steps.version.outputs.version }}
           path: dist/*.zip
           if-no-files-found: error
 

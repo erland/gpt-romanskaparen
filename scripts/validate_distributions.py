@@ -4,8 +4,11 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import zipfile
 from pathlib import Path
+
+SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$")
 
 REQUIRED_KNOWLEDGE = {
     "01-arbetsflode-och-nyborjarstod.md",
@@ -20,7 +23,26 @@ def hash_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+
+def filename_version(path: Path, prefix: str) -> str:
+    pattern = re.compile(rf"^{re.escape(prefix)}-v(.+)\.zip$")
+    match = pattern.match(path.name)
+    if not match:
+        raise RuntimeError(f"Felaktigt distributionsfilnamn: {path.name}")
+    version = match.group(1)
+    if not SEMVER_RE.fullmatch(version):
+        raise RuntimeError(f"Ogiltig SemVer i filnamnet: {version}")
+    return version
+
+
+def zip_version(zf: zipfile.ZipFile) -> str:
+    version = zf.read("VERSION").decode("utf-8").strip()
+    if not SEMVER_RE.fullmatch(version):
+        raise RuntimeError(f"Ogiltig VERSION i ZIP: {version}")
+    return version
+
 def validate_portable(path: Path) -> None:
+    expected_version = filename_version(path, "romanskaparen-chat")
     with zipfile.ZipFile(path) as zf:
         bad = zf.testzip()
         if bad:
@@ -31,7 +53,12 @@ def validate_portable(path: Path) -> None:
         missing = sorted(required - names)
         if missing:
             raise RuntimeError(f"Saknade filer i portable package: {missing}")
+        internal_version = zip_version(zf)
+        if internal_version != expected_version:
+            raise RuntimeError(f"VERSION {internal_version} matchar inte filnamnets version {expected_version}")
         manifest = json.loads(zf.read("MANIFEST.json").decode("utf-8"))
+        if manifest.get("version") != expected_version:
+            raise RuntimeError(f"Manifestversion {manifest.get('version')} matchar inte {expected_version}")
         if manifest.get("format") != "portable-chat-assistant":
             raise RuntimeError("Fel format i MANIFEST.json")
         if manifest.get("entrypoint") != "START-HERE.md":
@@ -49,6 +76,7 @@ def validate_portable(path: Path) -> None:
 
 
 def validate_custom(path: Path) -> None:
+    expected_version = filename_version(path, "romanskaparen-custom-gpt")
     with zipfile.ZipFile(path) as zf:
         bad = zf.testzip()
         if bad:
@@ -59,6 +87,9 @@ def validate_custom(path: Path) -> None:
         missing = sorted(required - names)
         if missing:
             raise RuntimeError(f"Saknade filer i Custom GPT package: {missing}")
+        internal_version = zip_version(zf)
+        if internal_version != expected_version:
+            raise RuntimeError(f"VERSION {internal_version} matchar inte filnamnets version {expected_version}")
 
 
 def main() -> int:

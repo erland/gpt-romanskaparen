@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import shutil
 import tempfile
 import zipfile
@@ -14,6 +15,7 @@ TEMPLATE_ROOT = ROOT / "templates" / "romanprojekt"
 KNOWLEDGE_ROOT = ROOT / "knowledge-upload"
 BUNDLE_PATH = ROOT / "project-template-bundle.md"
 VERSION_PATH = ROOT / "VERSION"
+SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$")
 
 KNOWLEDGE_FILES = [
     "01-arbetsflode-och-nyborjarstod.md",
@@ -203,10 +205,24 @@ def verify_zip(path: Path) -> None:
             raise RuntimeError(f"Tom ZIP: {path.name}")
 
 
-def build(output_dir: Path) -> list[Path]:
-    version = VERSION_PATH.read_text(encoding="utf-8").strip()
+def resolve_version(explicit_version: str | None) -> str:
+    version = explicit_version if explicit_version is not None else VERSION_PATH.read_text(encoding="utf-8").strip()
     if not version:
-        raise RuntimeError("VERSION är tom.")
+        raise RuntimeError("Version är tom.")
+    if version.startswith("v"):
+        raise RuntimeError("Ange versionsnumret utan inledande v, exempelvis 1.1.0.")
+    if not SEMVER_RE.fullmatch(version):
+        raise RuntimeError(f"Ogiltig SemVer-version: {version}")
+    return version
+
+
+def write_version(path: Path, version: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(version + "\n", encoding="utf-8")
+
+
+def build(output_dir: Path, explicit_version: str | None = None) -> list[Path]:
+    version = resolve_version(explicit_version)
 
     write_bundle(check=True)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -216,8 +232,9 @@ def build(output_dir: Path) -> list[Path]:
 
         custom = tmp / "romanskaparen-custom-gpt"
         custom.mkdir()
-        for name in ["README.md", "SETUP.md", "gpt-instructions.md", "conversation-starters.md", "project-template-bundle.md", "VERSION"]:
+        for name in ["README.md", "SETUP.md", "gpt-instructions.md", "conversation-starters.md", "project-template-bundle.md"]:
             copy_file(ROOT / name, custom / name)
+        write_version(custom / "VERSION", version)
         for name in KNOWLEDGE_FILES:
             copy_file(KNOWLEDGE_ROOT / name, custom / "knowledge-upload" / name)
         custom_zip = output_dir / f"romanskaparen-custom-gpt-v{version}.zip"
@@ -226,7 +243,7 @@ def build(output_dir: Path) -> list[Path]:
         portable = tmp / "romanskaparen-chat"
         portable.mkdir()
         copy_file(ROOT / "portable" / "START-HERE.md", portable / "START-HERE.md")
-        copy_file(VERSION_PATH, portable / "VERSION")
+        write_version(portable / "VERSION", version)
         copy_file(ROOT / "gpt-instructions.md", portable / "assistant" / "instructions.md")
         for name in KNOWLEDGE_FILES:
             copy_file(KNOWLEDGE_ROOT / name, portable / "knowledge" / name)
@@ -244,6 +261,7 @@ def build(output_dir: Path) -> list[Path]:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Bygg Romanskaparens Custom GPT- och portabla chat-distributioner.")
     parser.add_argument("--output-dir", type=Path, default=ROOT / "dist")
+    parser.add_argument("--version", help="Explicit SemVer-version utan inledande v. Överstyr VERSION, avsett för releasebyggen.")
     parser.add_argument("--sync-bundle", action="store_true", help="Generera project-template-bundle.md från templates/romanprojekt/ och avsluta.")
     parser.add_argument("--check-bundle", action="store_true", help="Kontrollera att project-template-bundle.md är synkad och avsluta.")
     args = parser.parse_args()
@@ -257,7 +275,7 @@ def main() -> int:
         print("OK: project-template-bundle.md är synkad med templates/romanprojekt/.")
         return 0
 
-    built = build(args.output_dir)
+    built = build(args.output_dir, args.version)
     for path in built:
         print(f"OK: {path} ({path.stat().st_size} bytes, sha256={sha256(path)})")
     return 0

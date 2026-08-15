@@ -18,6 +18,8 @@ dist/romanskaparen-custom-gpt-v<VERSION>.zip
 dist/romanskaparen-chat-v<VERSION>.zip
 ```
 
+Vid vanliga lokala byggen, push, pull request och manuella workflow-körningar används versionen i `VERSION`. Vid en publicerad GitHub Release används i stället release-taggen som versionskälla. Taggen måste vara SemVer med `v`-prefix, exempelvis `v1.1.0`; build-scriptet får då versionen `1.1.0`, och både ZIP-filnamn, interna `VERSION`-filer och portable-paketets `MANIFEST.json` får samma versionsnummer.
+
 - **Custom GPT-paketet** innehåller `gpt-instructions.md`, conversation starters och de sex knowledge-filer som ska användas i GPT Builder.
 - **Chat-paketet** innehåller `START-HERE.md`, `assistant/instructions.md`, samma knowledge-underlag, den fullständiga romanprojektmallen samt ett SHA-256-baserat `MANIFEST.json`.
 
