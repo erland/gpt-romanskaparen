@@ -29,7 +29,7 @@ Varje filbaserad ändring är en transaktion: välj exakt en explicit indata-ZIP
 Runtime-mål:
 - ChatGPT Chat – ready / active
 - Custom GPT – ready / active
-- OpenCode – ready / planned
+- OpenCode – ready / active
 - Claude Projects – reduced / inactive tills säker ZIP/script-parity är verifierad
 - OpenAI Plugin – reduced / inactive
 
