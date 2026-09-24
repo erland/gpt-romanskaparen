@@ -48,7 +48,7 @@ def validate_portable(path: Path) -> None:
         if bad:
             raise RuntimeError(f"Skadad ZIP-post: {bad}")
         names = set(zf.namelist())
-        required = {"START-HERE.md", "VERSION", "MANIFEST.json", "assistant/instructions.md", "knowledge/project-template-bundle.md"}
+        required = {"START-HERE.md", "VERSION", "MANIFEST.json", "assistant/instructions.md", "assistant/runtime-contract.json", "knowledge/project-template-bundle.md"}
         required |= {f"knowledge/{name}" for name in REQUIRED_KNOWLEDGE}
         missing = sorted(required - names)
         if missing:
@@ -56,6 +56,11 @@ def validate_portable(path: Path) -> None:
         internal_version = zip_version(zf)
         if internal_version != expected_version:
             raise RuntimeError(f"VERSION {internal_version} matchar inte filnamnets version {expected_version}")
+        contract = json.loads(zf.read("runtime-contract.json").decode("utf-8"))
+        if contract.get("runtime_id") != "chatgpt_custom":
+            raise RuntimeError("Fel runtime_id i Custom GPT runtime contract")
+        if contract.get("workspace_state", {}).get("authority") != "project_manifest":
+            raise RuntimeError("Custom GPT runtime contract saknar project_manifest authority")
         manifest = json.loads(zf.read("MANIFEST.json").decode("utf-8"))
         if manifest.get("version") != expected_version:
             raise RuntimeError(f"Manifestversion {manifest.get('version')} matchar inte {expected_version}")
@@ -73,6 +78,11 @@ def validate_portable(path: Path) -> None:
         template_names = [n for n in names if n.startswith("templates/romanprojekt/") and not n.endswith("/")]
         if not template_names:
             raise RuntimeError("Portable package saknar romanprojektmallen")
+        contract = json.loads(zf.read("assistant/runtime-contract.json").decode("utf-8"))
+        if contract.get("runtime_id") != "chatgpt_chat":
+            raise RuntimeError("Fel runtime_id i Chat runtime contract")
+        if contract.get("workspace_state", {}).get("authority") != "project_manifest":
+            raise RuntimeError("Chat runtime contract saknar project_manifest authority")
 
 
 def validate_custom(path: Path) -> None:
@@ -82,7 +92,7 @@ def validate_custom(path: Path) -> None:
         if bad:
             raise RuntimeError(f"Skadad ZIP-post: {bad}")
         names = set(zf.namelist())
-        required = {"gpt-instructions.md", "conversation-starters.md", "project-template-bundle.md", "SETUP.md", "README.md", "VERSION"}
+        required = {"gpt-instructions.md", "conversation-starters.md", "project-template-bundle.md", "runtime-contract.json", "SETUP.md", "README.md", "VERSION"}
         required |= {f"knowledge-upload/{name}" for name in REQUIRED_KNOWLEDGE}
         missing = sorted(required - names)
         if missing:
