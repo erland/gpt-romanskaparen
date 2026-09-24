@@ -204,12 +204,19 @@ runtime:
     enabled: true
     builder: scripts/build_distributions.py
   opencode:
-    enabled: false
-    role: assessed_ready
-    planned_step: 3
+    enabled: true
+    role: peer_distribution
+    mode: opencode_workspace
+    builder: scripts/build_opencode_runtime.py
+    validator: scripts/validate_opencode_runtime.py
+    entrypoint: AGENTS.md
+    runtime_root: .opencode/romanskaparen
+    state_authority: project-manifest.json
+    integrity_tool: .opencode/romanskaparen/templates/romanprojekt/scripts/project_integrity.py
   claude:
     enabled: false
     role: assessed_reduced
+    rationale: Canonical writing behavior is portable, but deterministic ZIP transaction and project_integrity.py execution parity is not verified.
   openai_plugin:
     enabled: false
     role: assessed_reduced
