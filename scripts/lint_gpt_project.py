@@ -65,6 +65,11 @@ check(claude.get("role")=="assessed_reduced","Claude assessment must remain redu
 check(runtime.get("openai_plugin",{}).get("enabled") is False,"OpenAI Plugin must remain inactive")
 check(runtime.get("openai_plugin",{}).get("role")=="assessed_reduced","OpenAI Plugin assessment must remain reduced")
 
+parity=cfg.get("runtime_parity",{})
+check(parity.get("model")=="runtime-parity.yaml","runtime parity model not registered")
+check(set(parity.get("registered_runtimes",[]))==expected,"runtime parity must register all five runtimes")
+check(set(parity.get("compared_categories",[]))=={"behavior","capability","artifact","workspace_state","tool"},"runtime parity categories differ")
+
 testing=cfg.get("testing",{})
 check(testing.get("manifest")=="tests/test-manifest.yaml","GPT Builder test manifest not registered")
 check(testing.get("manifest_schema")=="schemas/test-manifest.schema.json","test manifest schema not registered")
@@ -79,6 +84,8 @@ for rel in [
   "schemas/test-manifest.schema.json","tests/test-manifest.yaml","tests/stateful-regression-cases.json",
   "scripts/validate_gpt_builder_tests.py","scripts/test_project_integrity_contract.py","scripts/validate_stateful_behavior_contract.py",
   "scripts/build_opencode_runtime.py","scripts/validate_opencode_runtime.py",
+  "runtime-parity.yaml","runtime-contracts/chatgpt-chat.json","runtime-contracts/chatgpt-custom.json","runtime-contracts/opencode.json",
+  "scripts/build_project_package.py","scripts/build_delivery_metadata.py","scripts/validate_runtime_parity.py","scripts/validate_release_readiness.py",
   "schemas/capability-contract.schema.json","schemas/artifact-contract.schema.json",
   "schemas/workspace-state-contract.schema.json","schemas/tool-contract.schema.json",
   "docs/gpt-builder-1.5-migration-plan.md","PROJECT.md","STATUS.md","project-status.yaml"
