@@ -52,7 +52,19 @@ for marker in ["Absolut källregel","exakt **en** indata-zip","återskapa aldrig
 for marker in ["project-manifest.json","revision-log.md","--allow","audit-legacy","verify","commit"]:
     check(marker.lower() in manual.lower(),f"file-work manual missing marker: {marker}")
 
+testing=cfg.get("testing",{})
+check(testing.get("manifest")=="tests/test-manifest.yaml","GPT Builder test manifest not registered")
+check(testing.get("manifest_schema")=="schemas/test-manifest.schema.json","test manifest schema not registered")
+check(testing.get("stateful_cases")=="tests/stateful-regression-cases.json","stateful regression catalog not registered")
+check(testing.get("contract_validator")=="scripts/validate_gpt_builder_tests.py","test contract validator not registered")
+check(testing.get("deterministic_state_tests")=="scripts/test_project_integrity_contract.py","state transition tests not registered")
+check(testing.get("behavioral_contract_validator")=="scripts/validate_stateful_behavior_contract.py","behavioral state validator not registered")
+check(testing.get("deterministic_suites_block_release") is True,"deterministic state suites must block release")
+check(testing.get("live_runtime_evals_are_separate") is True,"live runtime evals must remain separate")
+
 for rel in [
+  "schemas/test-manifest.schema.json","tests/test-manifest.yaml","tests/stateful-regression-cases.json",
+  "scripts/validate_gpt_builder_tests.py","scripts/test_project_integrity_contract.py","scripts/validate_stateful_behavior_contract.py",
   "schemas/capability-contract.schema.json","schemas/artifact-contract.schema.json",
   "schemas/workspace-state-contract.schema.json","schemas/tool-contract.schema.json",
   "docs/gpt-builder-1.5-migration-plan.md","PROJECT.md","STATUS.md","project-status.yaml"
