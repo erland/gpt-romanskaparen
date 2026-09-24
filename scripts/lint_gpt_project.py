@@ -52,6 +52,19 @@ for marker in ["Absolut källregel","exakt **en** indata-zip","återskapa aldrig
 for marker in ["project-manifest.json","revision-log.md","--allow","audit-legacy","verify","commit"]:
     check(marker.lower() in manual.lower(),f"file-work manual missing marker: {marker}")
 
+runtime=cfg.get("runtime",{})
+opencode=runtime.get("opencode",{})
+claude=runtime.get("claude",{})
+check(opencode.get("enabled") is True,"OpenCode peer runtime must be enabled")
+check(opencode.get("mode")=="opencode_workspace","OpenCode runtime mode drift")
+check(opencode.get("runtime_root")==".opencode/romanskaparen","OpenCode runtime root drift")
+check(opencode.get("state_authority")=="project-manifest.json","OpenCode state authority drift")
+check(opencode.get("integrity_tool")==".opencode/romanskaparen/templates/romanprojekt/scripts/project_integrity.py","OpenCode integrity tool drift")
+check(claude.get("enabled") is False,"Claude must remain inactive")
+check(claude.get("role")=="assessed_reduced","Claude assessment must remain reduced")
+check(runtime.get("openai_plugin",{}).get("enabled") is False,"OpenAI Plugin must remain inactive")
+check(runtime.get("openai_plugin",{}).get("role")=="assessed_reduced","OpenAI Plugin assessment must remain reduced")
+
 testing=cfg.get("testing",{})
 check(testing.get("manifest")=="tests/test-manifest.yaml","GPT Builder test manifest not registered")
 check(testing.get("manifest_schema")=="schemas/test-manifest.schema.json","test manifest schema not registered")
@@ -65,6 +78,7 @@ check(testing.get("live_runtime_evals_are_separate") is True,"live runtime evals
 for rel in [
   "schemas/test-manifest.schema.json","tests/test-manifest.yaml","tests/stateful-regression-cases.json",
   "scripts/validate_gpt_builder_tests.py","scripts/test_project_integrity_contract.py","scripts/validate_stateful_behavior_contract.py",
+  "scripts/build_opencode_runtime.py","scripts/validate_opencode_runtime.py",
   "schemas/capability-contract.schema.json","schemas/artifact-contract.schema.json",
   "schemas/workspace-state-contract.schema.json","schemas/tool-contract.schema.json",
   "docs/gpt-builder-1.5-migration-plan.md","PROJECT.md","STATUS.md","project-status.yaml"
