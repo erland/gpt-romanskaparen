@@ -70,7 +70,13 @@ jobs:
 
       - name: Validate distributions
         shell: bash
-        run: python3 scripts/validate_distributions.py dist/*.zip
+        run: python3 scripts/validate_distributions.py dist/romanskaparen-custom-gpt-*.zip dist/romanskaparen-chat-*.zip
+
+      - name: Build OpenCode runtime
+        run: python3 scripts/build_opencode_runtime.py --version "${{ steps.version.outputs.version }}"
+
+      - name: Validate OpenCode runtime
+        run: python3 scripts/validate_opencode_runtime.py --version "${{ steps.version.outputs.version }}"
 
       - name: Upload workflow artifacts
         uses: actions/upload-artifact@v4
