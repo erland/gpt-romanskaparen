@@ -1,0 +1,34 @@
+schema_version: 1
+project:
+  id: romanskaparen
+  name: Romanskaparen
+  product_version: 1.0.0
+plan:
+  path: docs/gpt-builder-1.5-migration-plan.md
+  total_steps: 5
+progress:
+  current_phase: gpt-builder-1.5-conversion
+  current_step: 1
+  last_completed_step: 0
+  completed_steps: []
+  skipped_steps: []
+state:
+  overall: in_progress
+  blocking_issues: []
+  warnings: []
+next_step:
+  recommended: 1
+  title: Stateful 1.5-projektmodell och plattformsneutrala kontrakt
+  reason: Projektet har redan revisionslåst state och deterministiska integritetsgates men saknar GPT Builder 1.5-projektmodell.
+resume:
+  supported: true
+  required_files:
+    - gpt-project.yaml
+    - project-status.yaml
+    - docs/gpt-builder-1.5-migration-plan.md
+    - STATUS.md
+    - PROJECT.md
+  human_readable_status: GPT Builder 1.5-konverteringen har startat. Steg 1 inväntar CI-verifiering.
+release:
+  state: stable_before_conversion
+  version: 1.0.0
