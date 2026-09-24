@@ -56,11 +56,6 @@ def validate_portable(path: Path) -> None:
         internal_version = zip_version(zf)
         if internal_version != expected_version:
             raise RuntimeError(f"VERSION {internal_version} matchar inte filnamnets version {expected_version}")
-        contract = json.loads(zf.read("runtime-contract.json").decode("utf-8"))
-        if contract.get("runtime_id") != "chatgpt_custom":
-            raise RuntimeError("Fel runtime_id i Custom GPT runtime contract")
-        if contract.get("workspace_state", {}).get("authority") != "project_manifest":
-            raise RuntimeError("Custom GPT runtime contract saknar project_manifest authority")
         manifest = json.loads(zf.read("MANIFEST.json").decode("utf-8"))
         if manifest.get("version") != expected_version:
             raise RuntimeError(f"Manifestversion {manifest.get('version')} matchar inte {expected_version}")
@@ -100,6 +95,11 @@ def validate_custom(path: Path) -> None:
         internal_version = zip_version(zf)
         if internal_version != expected_version:
             raise RuntimeError(f"VERSION {internal_version} matchar inte filnamnets version {expected_version}")
+        contract = json.loads(zf.read("runtime-contract.json").decode("utf-8"))
+        if contract.get("runtime_id") != "chatgpt_custom":
+            raise RuntimeError("Fel runtime_id i Custom GPT runtime contract")
+        if contract.get("workspace_state", {}).get("authority") != "project_manifest":
+            raise RuntimeError("Custom GPT runtime contract saknar project_manifest authority")
 
 
 def main() -> int:
