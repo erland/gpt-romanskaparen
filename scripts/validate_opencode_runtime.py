@@ -18,7 +18,7 @@ def main():
         bad=z.testzip()
         if bad: raise SystemExit("Corrupt OpenCode ZIP: "+bad)
         names=set(z.namelist())
-        req={"AGENTS.md","opencode.json","README.md","VERSION","MANIFEST.json",".opencode/romanskaparen/instructions.md",".opencode/romanskaparen/project-template-bundle.md",".opencode/romanskaparen/runtime-contract.json"}
+        req={"AGENTS.md","opencode.json","README.md","VERSION","MANIFEST.json",".opencode/romanskaparen/instructions.md",".opencode/romanskaparen/project-template-bundle.md",".opencode/romanskaparen/runtime-contract.json",".opencode/romanskaparen/platform-contract.json"}
         req|={f".opencode/romanskaparen/knowledge/{p.name}" for p in KNOWLEDGE}
         req|={f".opencode/romanskaparen/templates/romanprojekt/{p}" for p in TEMPLATE_FILES}
         missing=sorted(req-names)
@@ -29,6 +29,9 @@ def main():
         agents=z.read("AGENTS.md").decode("utf-8")
         for marker in ["exactly one explicit input ZIP","project-manifest.json","--expected-revision","--allow","preserve SHA-256","do not deliver the ZIP"]:
             if marker not in agents: raise SystemExit("AGENTS missing marker: "+marker)
+        platform=json.loads(z.read(".opencode/romanskaparen/platform-contract.json"))
+        if platform.get("runtime_id")!="opencode": raise SystemExit("OpenCode platform contract runtime_id drift")
+        if platform.get("workspace_state",{}).get("authority")!="project_manifest": raise SystemExit("OpenCode platform contract state authority drift")
         contract=json.loads(z.read(".opencode/romanskaparen/runtime-contract.json"))
         for key,val in {"runtime_id":"opencode","state_authority":"project-manifest.json","source_rule":"exactly_one_explicit_input_zip","revision_increment":"exactly_one"}.items():
             if contract.get(key)!=val: raise SystemExit("Runtime contract drift: "+key)
