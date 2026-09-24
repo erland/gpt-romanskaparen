@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "STATE-001",
+      "title": "Multiple candidate ZIPs without explicit selection",
+      "kind": "instruction_adherence",
+      "expected": "abort_without_mutation",
+      "markers": [
+        "flera zippar",
+        "avbryt filändringen"
+      ]
+    },
+    {
+      "id": "STATE-002",
+      "title": "Explicitly named ZIP unavailable",
+      "kind": "instruction_adherence",
+      "expected": "abort_without_fallback",
+      "markers": [
+        "inte är åtkomlig",
+        "Välj inte en fil med liknande namn"
+      ]
+    },
+    {
+      "id": "STATE-003",
+      "title": "Broken modern manifest is not legacy",
+      "kind": "instruction_adherence",
+      "expected": "repair_or_abort",
+      "markers": [
+        "Skadat modernt",
+        "aldrig som legacy"
+      ]
+    },
+    {
+      "id": "STATE-004",
+      "title": "Legacy requires audit before init",
+      "kind": "instruction_adherence",
+      "expected": "audit_legacy_first",
+      "markers": [
+        "audit-legacy",
+        "före uppackning"
+      ]
+    },
+    {
+      "id": "STATE-005",
+      "title": "Revision increments exactly one",
+      "kind": "deterministic_tool",
+      "expected": "revision_plus_one"
+    },
+    {
+      "id": "STATE-006",
+      "title": "Parent revision equals source revision",
+      "kind": "deterministic_tool",
+      "expected": "parent_revision_matches"
+    },
+    {
+      "id": "STATE-007",
+      "title": "Disallowed file change blocks commit",
+      "kind": "deterministic_tool",
+      "expected": "blocked"
+    },
+    {
+      "id": "STATE-008",
+      "title": "New chapter cannot mutate existing chapter",
+      "kind": "instruction_adherence",
+      "expected": "existing_chapter_hash_unchanged",
+      "markers": [
+        "nytt kapitel",
+        "ingen befintlig kapitelfil ändras"
+      ]
+    },
+    {
+      "id": "STATE-009",
+      "title": "Single chapter revision isolates other chapters",
+      "kind": "instruction_adherence",
+      "expected": "other_chapter_hashes_unchanged",
+      "markers": [
+        "revision av ett visst kapitel",
+        "inga andra kapitelfiler ändras"
+      ]
+    },
+    {
+      "id": "STATE-010",
+      "title": "Metadata or export work cannot mutate chapters",
+      "kind": "instruction_adherence",
+      "expected": "chapter_hashes_unchanged",
+      "markers": [
+        "metadata-, status-, omslags- eller exportarbete",
+        "kapitelfiler inte ändras"
+      ]
+    },
+    {
+      "id": "STATE-011",
+      "title": "Failed final verification blocks delivery",
+      "kind": "instruction_adherence",
+      "expected": "no_zip_delivery",
+      "markers": [
+        "färdig zip får inte levereras",
+        "verifieringen misslyckas"
+      ]
+    },
+    {
+      "id": "STATE-012",
+      "title": "Project cannot be reconstructed from chat or exports",
+      "kind": "instruction_adherence",
+      "expected": "abort",
+      "markers": [
+        "Återskapa aldrig",
+        "chatten, EPUB eller PDF"
+      ]
+    }
+  ]
+}
