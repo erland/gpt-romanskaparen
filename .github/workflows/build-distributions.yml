@@ -56,6 +56,15 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "Bygger Romanskaparen version $version"
 
+      - name: Validate GPT Builder test contract
+        run: python3 scripts/validate_gpt_builder_tests.py
+
+      - name: Test project integrity state transitions
+        run: python3 scripts/test_project_integrity_contract.py
+
+      - name: Validate stateful behavioral contract
+        run: python3 scripts/validate_stateful_behavior_contract.py
+
       - name: Build distributions
         run: python3 scripts/build_distributions.py --output-dir dist --version "${{ steps.version.outputs.version }}"
 
