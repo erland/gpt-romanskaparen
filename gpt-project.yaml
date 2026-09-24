@@ -230,3 +230,13 @@ migration:
   preserve_domain_behavior: true
   preserve_integrity_model: true
   preserve_existing_chat_custom_builds_until_replaced: true
+
+testing:
+  manifest: tests/test-manifest.yaml
+  manifest_schema: schemas/test-manifest.schema.json
+  stateful_cases: tests/stateful-regression-cases.json
+  contract_validator: scripts/validate_gpt_builder_tests.py
+  deterministic_state_tests: scripts/test_project_integrity_contract.py
+  behavioral_contract_validator: scripts/validate_stateful_behavior_contract.py
+  deterministic_suites_block_release: true
+  live_runtime_evals_are_separate: true
