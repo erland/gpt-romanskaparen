@@ -7,7 +7,7 @@
 ## Migrationssteg
 
 - [x] Steg 1 – Stateful 1.5-projektmodell och plattformsneutrala kontrakt
-- [ ] Steg 2 – Test/eval-kontrakt för state, revisioner och failure gates
+- [x] Steg 2 – Test/eval-kontrakt för state, revisioner och failure gates
 - [ ] Steg 3 – OpenCode peer-runtime och fördjupad Claude-bedömning
 - [ ] Steg 4 – Runtime parity och modern releaseleverans
 - [ ] Steg 5 – Slutregression, hygiene och reproducerbar release
@@ -35,6 +35,10 @@
 
 CI passerade GPT Builder 1.5 stateful-linten tillsammans med project-template-bundle-synk, befintliga Chat/Custom-byggen, distributionsvalidering och artifact upload. Den befintliga romanmetoden, source-ZIP-regeln och project_integrity.py har inte ändrats.
 
+## Verifiering av steg 2
+
+CI passerade GPT Builder-testmanifestet, 12 stateful behavioral failure-cases och en exekverad project_integrity-svit. Den senare verifierar bland annat revision +1, parent/source revision, allow-list-blockering, fel expected revision, att audit-legacy avvisar moderna manifest samt att init inte skriver över ett trasigt modernt manifest. Live-runtime-scenarier hålls separat från de deterministiska CI-testerna.
+
 ## Aktuellt steg
 
-**Steg 2 – Test/eval-kontrakt för state, revisioner och failure gates.**
+**Steg 3 – OpenCode peer-runtime och fördjupad Claude-bedömning.**
