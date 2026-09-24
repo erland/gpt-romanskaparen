@@ -1,0 +1,264 @@
+schema_version: 1
+project:
+  id: romanskaparen
+  name: Romanskaparen
+  description: Stateful writing assistant for planning, drafting, revising, versioning and exporting novel projects.
+  profile: stateful_document_project
+
+analysis:
+  source: existing-project-conversion
+  runtime:
+    strategy: peer_candidates
+    candidates:
+      - runtime_id: chatgpt_chat
+        suitability: ready
+        activate_by_default: true
+        reason: Existing portable Chat package carries instructions, knowledge and the complete roman project template.
+      - runtime_id: chatgpt_custom
+        suitability: ready
+        activate_by_default: true
+        reason: Existing Custom GPT is a primary runtime and supports the guided writing workflow plus file creation.
+      - runtime_id: claude_project
+        suitability: reduced
+        activate_by_default: false
+        reason: The writing method is portable, but safe ZIP transactions and deterministic project_integrity.py execution must be verified before activation.
+      - runtime_id: opencode
+        suitability: ready
+        activate_by_default: true
+        reason: Native workspace, filesystem and shell fit the revision-locked project model and deterministic integrity script particularly well.
+      - runtime_id: openai_plugin
+        suitability: reduced
+        activate_by_default: false
+        reason: Skills can carry methodology, but the core workflow depends on user project files, revision-locked state and deterministic ZIP/integrity operations.
+
+model_robustness:
+  level: stateful
+  rationale: File-based novel work persists across turns in a revision-locked project package with authoritative manifest state, monotonic revisions and deterministic integrity gates.
+  operational_core: true
+  explicit_workflow: true
+  deterministic_gates: true
+  authoritative_structured_state: true
+  resume_recovery: true
+  instruction_adherence_evals: true
+
+instructions:
+  canonical: gpt-instructions.md
+  file_work_manual: knowledge-upload/05-projektstruktur-och-synk.md
+  project_template_bundle: project-template-bundle.md
+  integrity_tool: templates/romanprojekt/scripts/project_integrity.py
+
+capabilities:
+  contract_version: 1
+  schema: schemas/capability-contract.schema.json
+  requirements:
+    web:
+      level: optional
+      reason: Only needed when the novel requires external research or current facts.
+    filesystem:
+      read: required
+      write: required
+    archive:
+      read: required
+      write: required
+    shell:
+      level: recommended
+      reason: Enables deterministic project_integrity.py verification and revision commits.
+    code_execution:
+      level: required
+      reason: File-based project changes require deterministic integrity checks and packaging.
+    structured_data:
+      level: required
+    persistent_state:
+      level: required
+    external_tools:
+      level: optional
+    image_generation:
+      level: optional
+
+artifacts:
+  contract_version: 1
+  schema: schemas/artifact-contract.schema.json
+  outputs:
+    project_zip:
+      kind: canonical_project
+      format: zip
+      requirement: required_for_file_based_changes
+      persistence: persistent
+      multiplicity: one_per_revision
+    project_manifest:
+      kind: state
+      format: json
+      requirement: required
+      persistence: persistent
+      multiplicity: one
+    revision_log:
+      kind: history
+      format: markdown
+      requirement: required
+      persistence: persistent
+      multiplicity: one
+    chapter:
+      kind: manuscript
+      format: markdown
+      requirement: conditional
+      persistence: persistent
+      multiplicity: many
+    epub_export:
+      kind: publication
+      format: epub
+      requirement: optional
+      persistence: persistent
+      multiplicity: many
+    pdf_export:
+      kind: publication
+      format: pdf
+      requirement: optional
+      persistence: persistent
+      multiplicity: many
+    runtime_package:
+      kind: distribution
+      format: zip
+      requirement: required
+      persistence: persistent
+      multiplicity: many
+    project_package:
+      kind: package
+      format: zip
+      requirement: required
+      persistence: persistent
+      multiplicity: one
+
+workspace_state:
+  contract_version: 1
+  schema: schemas/workspace-state-contract.schema.json
+  workspace:
+    requirement: required_for_file_based_changes
+    persistence: transaction
+    portable: true
+    separate_from_assistant: true
+    source_rule: exactly_one_explicit_input_zip
+  state:
+    requirement: required_for_file_based_changes
+    persistence: persistent
+    authority: project_manifest
+    model: templates/romanprojekt/project-manifest.json
+    revision_log: templates/romanprojekt/revision-log.md
+    integrity_tool: templates/romanprojekt/scripts/project_integrity.py
+  transaction:
+    precondition: verify_selected_input
+    source_lock:
+      fields:
+        - source_zip_name
+        - project_id
+        - revision
+        - tracked_files
+        - chapter_hashes
+    mutation:
+      explicit_allow_list_required: true
+      revision_increment: exactly_one
+    postcondition:
+      package_full_project: true
+      reopen_delivery_zip: true
+      verify_delivery: true
+      unchanged_chapters_must_preserve_hash: true
+  resume:
+    authority: explicitly_selected_latest_verified_project_zip
+    reconstruct_from_chat: false
+    reconstruct_from_export: false
+
+tools:
+  contract_version: 1
+  schema: schemas/tool-contract.schema.json
+  tools:
+    - id: project-integrity
+      type: script
+      requirement: required
+      purpose: Verify, audit, initialize and commit revision-locked project state.
+      script: templates/romanprojekt/scripts/project_integrity.py
+      deterministic: true
+      mutates_workspace: conditional
+      commands:
+        - verify
+        - status
+        - init
+        - commit
+        - audit-legacy
+    - id: distribution-build
+      type: script
+      requirement: required
+      script: scripts/build_distributions.py
+      deterministic: true
+      mutates_workspace: conditional
+    - id: distribution-validation
+      type: script
+      requirement: required
+      script: scripts/validate_distributions.py
+      deterministic: true
+      mutates_workspace: false
+
+runtime:
+  chat_zip:
+    enabled: true
+    builder: scripts/build_distributions.py
+  custom_gpt:
+    enabled: true
+    builder: scripts/build_distributions.py
+  opencode:
+    enabled: true
+    role: peer_distribution
+    mode: opencode_workspace
+    builder: scripts/build_opencode_runtime.py
+    validator: scripts/validate_opencode_runtime.py
+    entrypoint: AGENTS.md
+    runtime_root: .opencode/romanskaparen
+    state_authority: project-manifest.json
+    integrity_tool: .opencode/romanskaparen/templates/romanprojekt/scripts/project_integrity.py
+  claude:
+    enabled: false
+    role: assessed_reduced
+    rationale: Canonical writing behavior is portable, but deterministic ZIP transaction and project_integrity.py execution parity is not verified.
+  openai_plugin:
+    enabled: false
+    role: assessed_reduced
+
+ci:
+  enabled: true
+  workflow: .github/workflows/build-distributions.yml
+
+release:
+  github:
+    enabled: true
+    workflow: .github/workflows/build-distributions.yml
+    version_source: release_tag
+
+migration:
+  target: gpt-builder-1.5.0
+  type: existing-project-conversion
+  preserve_domain_behavior: true
+  preserve_integrity_model: true
+  preserve_existing_chat_custom_builds_until_replaced: true
+
+testing:
+  manifest: tests/test-manifest.yaml
+  manifest_schema: schemas/test-manifest.schema.json
+  stateful_cases: tests/stateful-regression-cases.json
+  contract_validator: scripts/validate_gpt_builder_tests.py
+  deterministic_state_tests: scripts/test_project_integrity_contract.py
+  behavioral_contract_validator: scripts/validate_stateful_behavior_contract.py
+  deterministic_suites_block_release: true
+  live_runtime_evals_are_separate: true
+
+runtime_parity:
+  model: runtime-parity.yaml
+  registered_runtimes:
+    - chatgpt_chat
+    - chatgpt_custom
+    - claude_project
+    - opencode
+    - openai_plugin
+  compared_categories:
+    - behavior
+    - capability
+    - artifact
+    - workspace_state
+    - tool

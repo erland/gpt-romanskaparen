@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","title":"Tool Contract","type":"object","required":["contract_version","tools"],"properties":{"contract_version":{"const":1},"schema":{"type":"string"},"tools":{"type":"array"}},"additionalProperties":true}

@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "behavior": {
+    "canonical": "gpt-instructions.md",
+    "file_work_manual": "knowledge-upload/05-projektstruktur-och-synk.md",
+    "stateful": true
+  },
+  "capabilities": {
+    "filesystem_read": "required",
+    "filesystem_write": "required",
+    "archive_read": "required",
+    "archive_write": "required",
+    "code_execution": "required",
+    "shell": "recommended",
+    "structured_data": "required",
+    "persistent_state": "required",
+    "web": "optional"
+  },
+  "artifacts": {
+    "project_zip": "required_for_file_based_changes",
+    "project_manifest": "required",
+    "revision_log": "required",
+    "chapter": "conditional",
+    "epub_export": "optional",
+    "pdf_export": "optional",
+    "runtime_package": "required",
+    "project_package": "required"
+  },
+  "workspace_state": {
+    "authority": "project_manifest",
+    "source_rule": "exactly_one_explicit_input_zip",
+    "revision_increment": "exactly_one",
+    "explicit_allow_list_required": true,
+    "reopen_and_verify_delivery": true,
+    "reconstruct_from_chat": false,
+    "reconstruct_from_export": false
+  },
+  "tools": {
+    "project_integrity": "required",
+    "distribution_validation": "required",
+    "state_transition_tests": "required"
+  },
+  "runtime_id": "chatgpt_custom",
+  "adapter": {
+    "mode": "custom_gpt",
+    "entrypoint": "gpt-instructions.md"
+  }
+}
