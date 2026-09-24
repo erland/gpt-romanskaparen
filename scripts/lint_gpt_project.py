@@ -86,6 +86,7 @@ for rel in [
   "scripts/build_opencode_runtime.py","scripts/validate_opencode_runtime.py",
   "runtime-parity.yaml","runtime-contracts/chatgpt-chat.json","runtime-contracts/chatgpt-custom.json","runtime-contracts/opencode.json",
   "scripts/build_project_package.py","scripts/build_delivery_metadata.py","scripts/validate_runtime_parity.py","scripts/validate_release_readiness.py",
+  "scripts/final_project_hygiene.py","scripts/validate_workflow_parity.py","scripts/verify_reproducible_build.py",
   "schemas/capability-contract.schema.json","schemas/artifact-contract.schema.json",
   "schemas/workspace-state-contract.schema.json","schemas/tool-contract.schema.json",
   "docs/gpt-builder-1.5-migration-plan.md","PROJECT.md","STATUS.md","project-status.yaml"
