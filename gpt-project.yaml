@@ -247,3 +247,18 @@ testing:
   behavioral_contract_validator: scripts/validate_stateful_behavior_contract.py
   deterministic_suites_block_release: true
   live_runtime_evals_are_separate: true
+
+runtime_parity:
+  model: runtime-parity.yaml
+  registered_runtimes:
+    - chatgpt_chat
+    - chatgpt_custom
+    - claude_project
+    - opencode
+    - openai_plugin
+  compared_categories:
+    - behavior
+    - capability
+    - artifact
+    - workspace_state
+    - tool
