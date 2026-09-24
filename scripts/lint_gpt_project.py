@@ -46,8 +46,11 @@ for key in ["schema_version","project_id","project_slug","revision","parent_revi
     check(key in manifest,f"project manifest missing state field: {key}")
 
 canonical=(ROOT/"gpt-instructions.md").read_text(encoding="utf-8")
-for marker in ["Absolut källregel","exakt **en** indata-zip","project-manifest.json","revision-log.md","--allow","återskapa aldrig","verifierad projekt-zip"]:
+manual=(ROOT/"knowledge-upload/05-projektstruktur-och-synk.md").read_text(encoding="utf-8")
+for marker in ["Absolut källregel","exakt **en** indata-zip","återskapa aldrig","verifierad projekt-zip"]:
     check(marker.lower() in canonical.lower(),f"canonical instruction missing marker: {marker}")
+for marker in ["project-manifest.json","revision-log.md","--allow","audit-legacy","verify","commit"]:
+    check(marker.lower() in manual.lower(),f"file-work manual missing marker: {marker}")
 
 for rel in [
   "schemas/capability-contract.schema.json","schemas/artifact-contract.schema.json",
