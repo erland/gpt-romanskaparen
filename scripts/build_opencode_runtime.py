@@ -28,6 +28,7 @@ def main():
         runtime=base/".opencode"/"romanskaparen"; runtime.mkdir(parents=True)
         copy(ROOT/"gpt-instructions.md",runtime/"instructions.md")
         copy(ROOT/"project-template-bundle.md",runtime/"project-template-bundle.md")
+        copy(ROOT/"runtime-contracts/opencode.json",runtime/"platform-contract.json")
         for src in KNOWLEDGE: copy(src,runtime/"knowledge"/src.name)
         shutil.copytree(TEMPLATE,runtime/"templates"/"romanprojekt")
         contract={
