@@ -6,7 +6,7 @@
 
 ## Migrationssteg
 
-- [ ] Steg 1 – Stateful 1.5-projektmodell och plattformsneutrala kontrakt
+- [x] Steg 1 – Stateful 1.5-projektmodell och plattformsneutrala kontrakt
 - [ ] Steg 2 – Test/eval-kontrakt för state, revisioner och failure gates
 - [ ] Steg 3 – OpenCode peer-runtime och fördjupad Claude-bedömning
 - [ ] Steg 4 – Runtime parity och modern releaseleverans
@@ -31,8 +31,10 @@
 - Claude Projects: reduced / inactive
 - OpenAI Plugin: reduced / inactive
 
+## Verifiering av steg 1
+
+CI passerade GPT Builder 1.5 stateful-linten tillsammans med project-template-bundle-synk, befintliga Chat/Custom-byggen, distributionsvalidering och artifact upload. Den befintliga romanmetoden, source-ZIP-regeln och project_integrity.py har inte ändrats.
+
 ## Aktuellt steg
 
-**Steg 1 – Stateful 1.5-projektmodell och plattformsneutrala kontrakt.**
-
-Steget markeras klart först när den nya GPT Builder-linten passerar tillsammans med befintlig bundle-, build- och distributionsvalidering.
+**Steg 2 – Test/eval-kontrakt för state, revisioner och failure gates.**
