@@ -129,3 +129,21 @@ Innehållsförteckningen ska visa:
 - Canvas: På om tillgängligt.
 - Code interpreter / filskapande: På om GPT:n ska kunna skapa och uppdatera zip-filer.
 - Image generation: Valfritt för omslag och konceptbilder.
+
+
+## GPT Builder 1.5 distributions
+
+Romanskaparen underhålls nu som ett **stateful GPT Builder 1.5-projekt** där romanprojektets `project-manifest.json` är auktoritativ state och `project_integrity.py` är den deterministiska integrity/state-transition-gaten.
+
+Aktiva peer-distributioner:
+
+- ChatGPT Chat
+- Custom GPT
+- OpenCode
+
+Reducerade/inaktiva runtimes:
+
+- Claude Projects
+- OpenAI Plugin
+
+En release bygger Project, Chat, Custom GPT och OpenCode ZIP-paket samt `SHA256SUMS.txt` och `DELIVERY-MANIFEST.json`. Runtime parity, state-transition tests, behavioral failure-cases, release readiness, project hygiene, workflow parity och reproducible release är blockerande kvalitetsgrindar.
