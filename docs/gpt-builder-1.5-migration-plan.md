@@ -47,4 +47,4 @@ Verifiera full test/eval-kedja, project hygiene, workflow parity och reproducerb
 
 ## Aktuellt steg
 
-**Steg 1 – Stateful 1.5-projektmodell och plattformsneutrala kontrakt.**
+Alla konverteringssteg 1–5 är klara och verifierade. Projektet är i maintenance-läge efter konverteringen till GPT Byggaren 1.5.0.
