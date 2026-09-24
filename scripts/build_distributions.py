@@ -234,6 +234,7 @@ def build(output_dir: Path, explicit_version: str | None = None) -> list[Path]:
         custom.mkdir()
         for name in ["README.md", "SETUP.md", "gpt-instructions.md", "conversation-starters.md", "project-template-bundle.md"]:
             copy_file(ROOT / name, custom / name)
+        copy_file(ROOT / "runtime-contracts" / "chatgpt-custom.json", custom / "runtime-contract.json")
         write_version(custom / "VERSION", version)
         for name in KNOWLEDGE_FILES:
             copy_file(KNOWLEDGE_ROOT / name, custom / "knowledge-upload" / name)
@@ -245,6 +246,7 @@ def build(output_dir: Path, explicit_version: str | None = None) -> list[Path]:
         copy_file(ROOT / "portable" / "START-HERE.md", portable / "START-HERE.md")
         write_version(portable / "VERSION", version)
         copy_file(ROOT / "gpt-instructions.md", portable / "assistant" / "instructions.md")
+        copy_file(ROOT / "runtime-contracts" / "chatgpt-chat.json", portable / "assistant" / "runtime-contract.json")
         for name in KNOWLEDGE_FILES:
             copy_file(KNOWLEDGE_ROOT / name, portable / "knowledge" / name)
         copy_file(BUNDLE_PATH, portable / "knowledge" / "project-template-bundle.md")
