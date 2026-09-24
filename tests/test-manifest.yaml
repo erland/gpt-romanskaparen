@@ -1,0 +1,23 @@
+schema_version: 1
+suites:
+  distribution_contract:
+    type: deterministic
+    blocking: true
+    runner: scripts/validate_distributions.py
+    description: Existing Chat/Custom package integrity checks.
+  state_transition_contract:
+    type: deterministic
+    blocking: true
+    runner: scripts/test_project_integrity_contract.py
+    description: Executes project_integrity.py against temporary projects and verifies revision/failure gates.
+  behavioral_state_contract:
+    type: behavioral_contract
+    blocking: true
+    path: tests/stateful-regression-cases.json
+    runner: scripts/validate_stateful_behavior_contract.py
+    description: Verifies canonical instructions/manual retain source-lock, legacy, chapter-isolation and delivery-failure rules.
+  live_runtime_eval:
+    type: manual_runtime
+    blocking: false
+    path: tests/stateful-regression-cases.json
+    description: Reuse the same scenarios against ChatGPT/Custom/OpenCode live runtimes; kept separate from deterministic CI.
