@@ -7,7 +7,7 @@ plan:
   path: docs/gpt-builder-1.5-migration-plan.md
   total_steps: 5
 progress:
-  current_phase: maintenance
+  current_phase: plugin_modernization_gpt_builder_1_5_1
   current_step: 5
   last_completed_step: 5
   completed_steps:
@@ -23,7 +23,7 @@ state:
   warnings: []
 validation:
   last_result: pass
-  details: GPT Builder stateful lint, testkontrakt, project_integrity state-transition-tester, 12 behavioral failure-cases, Chat/Custom/OpenCode builds och valideringar, Project ZIP, runtime parity, release readiness, final project hygiene, workflow parity och reproducerbar release passerade.
+  details: GPT Builder stateful lint, testkontrakt, project_integrity state-transition-tester och befintlig releasekedja är baslinje. OpenAI Plugin 1.5.1-justeringen valideras i aktuell PR inklusive distribution, parity, release readiness och reproducibility.
 project_hygiene:
   last_result: pass
   details: Genererade dist/build/cache/temp-artefakter ignoreras och är inte versionshanterade.
@@ -42,12 +42,12 @@ release:
     chatgpt_custom: ready_active
     opencode: ready_active
     claude_project: reduced_inactive
-    openai_plugin: reduced_inactive
-  note: GPT Builder 1.5.0-konverteringen är klar och PR:n är redo att mergeas.
+    openai_plugin: ready_runtime_dependent
+  note: GPT Builder 1.5.1-pluginjusteringen är implementerad och ska mergeas efter grön PR-CI.
 next_step:
-  recommended: null
-  title: Maintenance
-  reason: Alla konverteringssteg 1–5 är klara och verifierade.
+  recommended: validate_and_merge
+  title: Validera och mergea OpenAI Plugin
+  reason: OpenAI Plugin är aktiverad som stateful ready_runtime_dependent peer-runtime med required host archive/workspace/execution och project_integrity.py som required script resource.
 resume:
   supported: true
   required_files:
@@ -56,4 +56,4 @@ resume:
     - docs/gpt-builder-1.5-migration-plan.md
     - STATUS.md
     - PROJECT.md
-  human_readable_status: Konverteringen till GPT Byggaren 1.5.0 är klar. Projektet är i maintenance-läge.
+  human_readable_status: GPT Byggaren 1.5.1-pluginjusteringen är implementerad och valideras i aktuell PR.
