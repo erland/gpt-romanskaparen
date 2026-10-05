@@ -1,4 +1,4 @@
-# Konverteringsplan – GPT Byggaren 1.5.0
+# Konverteringsplan – GPT Byggaren 1.5.1
 
 **Projekt:** Romanskaparen  
 **Konverteringstyp:** existing-project-conversion  
@@ -47,4 +47,4 @@ Verifiera full test/eval-kedja, project hygiene, workflow parity och reproducerb
 
 ## Aktuellt steg
 
-Alla konverteringssteg 1–5 är klara och verifierade. Projektet är i maintenance-läge efter konverteringen till GPT Byggaren 1.5.0.
+Alla konverteringssteg 1–5 är klara och verifierade. Projektet är i maintenance-läge efter konverteringen till GPT Byggaren 1.5.1.
