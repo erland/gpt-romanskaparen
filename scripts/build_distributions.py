@@ -317,10 +317,8 @@ def build(output_dir: Path, explicit_version: str | None = None) -> list[Path]:
         (plugin / "plugin.json").write_text(json.dumps(plugin_manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
         runtime_tools = {
-            **json.loads((ROOT / "runtime-contracts" / "opencode.json").read_text(encoding="utf-8")).get("tools", {}),
+            "project_integrity": "required",
         }
-        if isinstance(runtime_tools.get("tools"), list):
-            runtime_tools["tools"] = [t for t in runtime_tools["tools"] if t.get("id") == "project-integrity"]
 
         runtime_contract = {
             "schema_version": 1,
