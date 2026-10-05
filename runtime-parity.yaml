@@ -30,6 +30,7 @@ runtimes:
     active: false
     reason: Deterministic ZIP transaction and project_integrity.py execution parity is not verified.
   openai_plugin:
-    suitability: reduced
-    active: false
-    reason: Core workflow depends on revision-locked project files and deterministic integrity operations rather than plugin-centric actions.
+    suitability: ready
+    active: true
+    compatibility: ready_runtime_dependent
+    reason: Skills-first carries the canonical writing/project model; full file-based parity requires host workspace, archive, filesystem, code execution and persistent state capabilities.
