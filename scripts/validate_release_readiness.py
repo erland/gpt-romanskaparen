@@ -11,6 +11,7 @@ def main():
       dist/f"romanskaparen-custom-gpt-v{version}.zip",
       dist/f"romanskaparen-chat-v{version}.zip",
       dist/f"romanskaparen-opencode-v{version}.zip",
+      dist/f"romanskaparen-openai-plugin-v{version}.zip",
     ]
     for p in arts:
         if not p.exists(): errors.append("missing "+p.name); continue
@@ -24,9 +25,10 @@ def main():
     else:
         data=json.loads(dm.read_text(encoding="utf-8"))
         types={x.get("type") for x in data.get("artifacts",[])}
-        if types!={"project_zip","custom_gpt_zip","chat_zip","opencode_zip"}: errors.append("delivery types differ")
+        if types!={"project_zip","custom_gpt_zip","chat_zip","opencode_zip","plugin_zip"}: errors.append("delivery types differ")
         rs=data.get("runtime_status",{})
-        if rs.get("claude_project")!="reduced_inactive" or rs.get("openai_plugin")!="reduced_inactive": errors.append("reduced runtimes missing from delivery metadata")
+        if rs.get("claude_project")!="reduced_inactive": errors.append("claude reduced runtime missing from delivery metadata")
+        if rs.get("openai_plugin")!="ready_runtime_dependent": errors.append("openai_plugin delivery runtime status mismatch")
     if not sums.exists(): errors.append("checksums missing")
     else:
         got={}
