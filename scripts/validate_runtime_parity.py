@@ -9,9 +9,9 @@ expected={"chatgpt_chat","chatgpt_custom","claude_project","opencode","openai_pl
 if set(parity.get("registered_runtimes",[]))!=expected: errors.append("all five runtimes must be registered")
 if set(parity.get("compared_categories",[]))!={"behavior","capability","artifact","workspace_state","tool"}: errors.append("parity categories differ")
 candidates={x["runtime_id"]:x for x in cfg["analysis"]["runtime"]["candidates"]}
-for rid in {"chatgpt_chat","chatgpt_custom","opencode"}:
+for rid in {"chatgpt_chat","chatgpt_custom","opencode","openai_plugin"}:
     if candidates[rid].get("suitability")!="ready" or candidates[rid].get("activate_by_default") is not True: errors.append(rid+" not ready/active")
-for rid in {"claude_project","openai_plugin"}:
+for rid in {"claude_project"}:
     if candidates[rid].get("suitability")!="reduced" or candidates[rid].get("activate_by_default") is not False: errors.append(rid+" not reduced/inactive")
 contracts={"chatgpt_chat":"runtime-contracts/chatgpt-chat.json","chatgpt_custom":"runtime-contracts/chatgpt-custom.json","opencode":"runtime-contracts/opencode.json"}
 for rid,path in contracts.items():
@@ -20,6 +20,13 @@ for rid,path in contracts.items():
     if d.get("workspace_state",{}).get("authority")!="project_manifest": errors.append(rid+" state authority drift")
     if d.get("workspace_state",{}).get("source_rule")!="exactly_one_explicit_input_zip": errors.append(rid+" source rule drift")
     if d.get("workspace_state",{}).get("revision_increment")!="exactly_one": errors.append(rid+" revision rule drift")
+plugin_model=parity.get("runtimes",{}).get("openai_plugin",{})
+if plugin_model.get("suitability")!="ready" or plugin_model.get("active") is not True or plugin_model.get("compatibility")!="ready_runtime_dependent":
+    errors.append("openai_plugin parity model drift")
+if cfg.get("runtime",{}).get("openai_plugin",{}).get("state_authority")!="project_manifest":
+    errors.append("openai_plugin state authority drift")
+if cfg.get("runtime",{}).get("openai_plugin",{}).get("conversation_fallback") is not False:
+    errors.append("openai_plugin conversation fallback drift")
 if errors:
     print("RUNTIME PARITY: FAIL"); [print("-",e) for e in errors]; sys.exit(1)
 print("RUNTIME PARITY: PASS")
