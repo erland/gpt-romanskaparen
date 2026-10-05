@@ -1,7 +1,7 @@
 # Status – Romanskaparen
 
 **Produktversion:** 1.0.0  
-**Migration:** GPT Byggaren 1.5.0  
+**Migration:** GPT Byggaren 1.5.1  
 **Tillstånd:** Maintenance
 
 ## Migrationssteg
@@ -29,7 +29,7 @@
 - Custom GPT: ready / active
 - OpenCode: ready / active
 - Claude Projects: reduced / inactive
-- OpenAI Plugin: reduced / inactive
+- OpenAI Plugin: ready / active (`ready_runtime_dependent`)
 
 ## Verifiering av steg 1
 
@@ -43,11 +43,11 @@ CI passerade GPT Builder-testmanifestet, 12 stateful behavioral failure-cases oc
 
 CI passerade OpenCode-build och runtime-validering tillsammans med Chat/Custom, GPT Builder-testkontraktet, project_integrity state-transition-testerna och de 12 behavioral failure-casen. OpenCode-paketet innehåller canonical instruktion, Knowledge, hela romanprojektmallen och exakt samma project_integrity.py som projektmallen. project-manifest.json är fortsatt auktoritativ state och native filesystem/shell/archive används för deterministiska transaktioner.
 
-Claude Projects förblir reduced/inactive eftersom deterministic ZIP transaction och project_integrity.py-exekveringsparity inte är verifierad. OpenAI Plugin förblir reduced/inactive.
+Claude Projects förblir reduced/inactive eftersom deterministic ZIP transaction och project_integrity.py-exekveringsparity inte är verifierad. OpenAI Plugin är nu aktiv som skills-first peer-runtime med explicita hostkrav och `project_integrity.py` som required script resource.
 
 ## Verifiering av steg 4
 
-CI passerade runtime parity för alla fem bedömda runtimes. Aktiva peers är ChatGPT Chat, Custom GPT och OpenCode; Claude Projects och OpenAI Plugin är reduced/inactive. Releaseleveransen bygger nu Project ZIP samt tre aktiva runtime-ZIP:ar, SHA256SUMS.txt och DELIVERY-MANIFEST.json. Release readiness verifierar hela leveransen och att de reducerade runtimes fortfarande redovisas explicit.
+Runtime parity omfattar alla fem bedömda runtimes. Aktiva peers är ChatGPT Chat, Custom GPT, OpenCode och OpenAI Plugin; Claude Projects är fortsatt reduced/inactive. Releaseleveransen bygger Project ZIP samt fyra aktiva runtime-ZIP:ar, SHA256SUMS.txt och DELIVERY-MANIFEST.json.
 
 ## Verifiering av steg 5
 
@@ -55,7 +55,7 @@ Slutkörningen passerade hela stateful test- och releasekedjan inklusive final p
 
 ## Aktuellt läge
 
-Konverteringen till GPT Byggaren 1.5.0 är klar. Projektet är i **maintenance-läge** och PR:n är redo att mergeas.
+GPT Byggaren 1.5.1-pluginjusteringen är implementerad och valideras i aktuell PR. Efter grön CI återgår projektet till **maintenance-läge**.
 
 ## Blockerare
 
