@@ -24,7 +24,7 @@ check(candidates.get("chatgpt_chat",{}).get("suitability")=="ready","Chat must b
 check(candidates.get("chatgpt_custom",{}).get("suitability")=="ready","Custom GPT must be ready")
 check(candidates.get("opencode",{}).get("suitability")=="ready","OpenCode must be ready")
 check(candidates.get("claude_project",{}).get("suitability")=="reduced","Claude must currently be reduced")
-check(candidates.get("openai_plugin",{}).get("suitability")=="reduced","OpenAI Plugin must be reduced")
+check(candidates.get("openai_plugin",{}).get("suitability")=="ready","OpenAI Plugin must be ready")
 
 ws=cfg.get("workspace_state",{})
 check(ws.get("state",{}).get("authority")=="project_manifest","project manifest must be authoritative state")
@@ -62,8 +62,16 @@ check(opencode.get("state_authority")=="project-manifest.json","OpenCode state a
 check(opencode.get("integrity_tool")==".opencode/romanskaparen/templates/romanprojekt/scripts/project_integrity.py","OpenCode integrity tool drift")
 check(claude.get("enabled") is False,"Claude must remain inactive")
 check(claude.get("role")=="assessed_reduced","Claude assessment must remain reduced")
-check(runtime.get("openai_plugin",{}).get("enabled") is False,"OpenAI Plugin must remain inactive")
-check(runtime.get("openai_plugin",{}).get("role")=="assessed_reduced","OpenAI Plugin assessment must remain reduced")
+plugin=runtime.get("openai_plugin",{})
+check(plugin.get("enabled") is True,"OpenAI Plugin must be enabled")
+check(plugin.get("role")=="peer_distribution","OpenAI Plugin role drift")
+check(plugin.get("mode")=="skills_first","OpenAI Plugin mode drift")
+check(plugin.get("compatibility")=="ready_runtime_dependent","OpenAI Plugin compatibility drift")
+for key in ("workspace","filesystem_read","filesystem_write","archive_read","archive_write","code_execution","persistent_state"):
+    check(plugin.get(key)=="required_host_runtime",f"OpenAI Plugin host dependency drift: {key}")
+check(plugin.get("state_authority")=="project_manifest","OpenAI Plugin state authority drift")
+check(plugin.get("conversation_fallback") is False,"OpenAI Plugin conversation fallback must be false")
+check(plugin.get("mcp_generated") is False,"OpenAI Plugin must not generate MCP")
 
 parity=cfg.get("runtime_parity",{})
 check(parity.get("model")=="runtime-parity.yaml","runtime parity model not registered")

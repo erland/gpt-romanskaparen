@@ -12,7 +12,7 @@ Romanskaparen är en stateful skrivassistent för planering, skrivande, revision
 
 ## GPT Byggaren 1.5-konvertering
 
-Projektet konverteras till GPT Byggaren 1.5.0 utan att ändra romanskrivnings- eller filintegritetsbeteendet.
+Projektet konverteras till GPT Byggaren 1.5.1 utan att ändra romanskrivnings- eller filintegritetsbeteendet.
 
 Robusthetsnivå: **stateful**.
 
@@ -31,6 +31,6 @@ Runtime-mål:
 - Custom GPT – ready / active
 - OpenCode – ready / active
 - Claude Projects – reduced / inactive tills säker ZIP/script-parity är verifierad
-- OpenAI Plugin – reduced / inactive
+- OpenAI Plugin – ready / active (`ready_runtime_dependent`), med hostkrav för workspace, archive, filesystem, code execution och persistent state
 
 Migreringsplan: `docs/gpt-builder-1.5-migration-plan.md`.

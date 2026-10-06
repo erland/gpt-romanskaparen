@@ -27,9 +27,9 @@ analysis:
         activate_by_default: true
         reason: Native workspace, filesystem and shell fit the revision-locked project model and deterministic integrity script particularly well.
       - runtime_id: openai_plugin
-        suitability: reduced
-        activate_by_default: false
-        reason: Skills can carry methodology, but the core workflow depends on user project files, revision-locked state and deterministic ZIP/integrity operations.
+        suitability: ready
+        activate_by_default: true
+        reason: Skills-first can carry the canonical writing method and project model when the host provides workspace, archive, filesystem, code execution and persistent state for revision-locked ZIP transactions.
 
 model_robustness:
   level: stateful
@@ -218,8 +218,27 @@ runtime:
     role: assessed_reduced
     rationale: Canonical writing behavior is portable, but deterministic ZIP transaction and project_integrity.py execution parity is not verified.
   openai_plugin:
-    enabled: false
-    role: assessed_reduced
+    enabled: true
+    role: peer_distribution
+    mode: skills_first
+    compatibility: ready_runtime_dependent
+    entrypoint: skills/romanskaparen/SKILL.md
+    artifact_name: romanskaparen-openai-plugin-v{version}.zip
+    workspace: required_host_runtime
+    filesystem_read: required_host_runtime
+    filesystem_write: required_host_runtime
+    archive_read: required_host_runtime
+    archive_write: required_host_runtime
+    code_execution: required_host_runtime
+    persistent_state: required_host_runtime
+    state_authority: project_manifest
+    conversation_fallback: false
+    mcp_generated: false
+    script_resources:
+      - path: skills/romanskaparen/scripts/project_integrity.py
+        requirement: required
+      - path: skills/romanskaparen/scripts/publishing/fix-epub-after-pandoc.py
+        requirement: recommended
 
 ci:
   enabled: true
@@ -232,7 +251,7 @@ release:
     version_source: release_tag
 
 migration:
-  target: gpt-builder-1.5.0
+  target: gpt-builder-1.5.1
   type: existing-project-conversion
   preserve_domain_behavior: true
   preserve_integrity_model: true

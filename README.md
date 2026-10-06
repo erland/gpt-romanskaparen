@@ -1,9 +1,9 @@
 # Romanskaparen – Custom GPT och portabel chat-version
 
-Detta repository innehåller samma kanoniska material för två distributionsformer av Romanskaparen: en **Custom GPT-version** och en **portabel chat-ZIP** som kan bifogas i en vanlig ChatGPT-konversation. Båda byggs från samma instruktioner, knowledge-filer och romanprojektmall.
+Detta repository innehåller samma kanoniska material för flera peer-distributioner av Romanskaparen. Chat, Custom GPT, OpenCode och OpenAI Plugin bygger på samma instruktioner, Knowledge och revisionslåsta romanprojektmodell.
 
 
-## Två distributionsformat
+## Distributionsformat
 
 Kör:
 
@@ -144,6 +144,8 @@ Aktiva peer-distributioner:
 Reducerade/inaktiva runtimes:
 
 - Claude Projects
-- OpenAI Plugin
+- OpenAI Plugin – ready / active (`ready_runtime_dependent`)
 
-En release bygger Project, Chat, Custom GPT och OpenCode ZIP-paket samt `SHA256SUMS.txt` och `DELIVERY-MANIFEST.json`. Runtime parity, state-transition tests, behavioral failure-cases, release readiness, project hygiene, workflow parity och reproducible release är blockerande kvalitetsgrindar.
+OpenAI Plugin är skills-first med `plugin.json` direkt i ZIP-roten. Knowledge paketeras som references, romanprojektmallen som assets och `project_integrity.py` som required script resource. Full filbaserad funktion kräver host workspace, filesystem read/write, archive read/write, code execution och persistent state. `project-manifest.json` är fortsatt auktoritativ state och projekt får inte rekonstrueras från chatthistorik eller export.
+
+En release bygger Project, Chat, Custom GPT, OpenCode och OpenAI Plugin ZIP-paket samt `SHA256SUMS.txt` och `DELIVERY-MANIFEST.json`. Runtime parity, state-transition tests, behavioral failure-cases, release readiness, project hygiene, workflow parity och reproducible release är blockerande kvalitetsgrindar.

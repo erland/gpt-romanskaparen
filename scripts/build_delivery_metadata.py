@@ -11,6 +11,7 @@ def main():
       ("custom_gpt_zip",dist/f"romanskaparen-custom-gpt-v{version}.zip"),
       ("chat_zip",dist/f"romanskaparen-chat-v{version}.zip"),
       ("opencode_zip",dist/f"romanskaparen-opencode-v{version}.zip"),
+      ("plugin_zip",dist/f"romanskaparen-openai-plugin-v{version}.zip"),
     ]
     missing=[p.name for _,p in files if not p.exists()]
     if missing: print("Missing: "+", ".join(missing),file=sys.stderr); return 1
@@ -19,7 +20,7 @@ def main():
       "schema_version":1,"version":version,"artifacts":rows,
       "runtime_status":{
         "chatgpt_chat":"ready_active","chatgpt_custom":"ready_active","opencode":"ready_active",
-        "claude_project":"reduced_inactive","openai_plugin":"reduced_inactive"
+        "openai_plugin":"ready_runtime_dependent","claude_project":"reduced_inactive"
       }},ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     (dist/"SHA256SUMS.txt").write_text("".join(f"{r['sha256']}  {r['file']}\n" for r in rows),encoding="utf-8")
     print(dist/"DELIVERY-MANIFEST.json"); print(dist/"SHA256SUMS.txt"); return 0

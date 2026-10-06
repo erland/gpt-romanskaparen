@@ -255,9 +255,147 @@ def build(output_dir: Path, explicit_version: str | None = None) -> list[Path]:
         portable_zip = output_dir / f"romanskaparen-chat-v{version}.zip"
         zip_dir(portable, portable_zip)
 
-    for path in (custom_zip, portable_zip):
+        plugin = tmp / "romanskaparen-openai-plugin"
+        plugin.mkdir()
+        skill = plugin / "skills" / "romanskaparen"
+        refs = skill / "references" / "knowledge"
+        assets = skill / "assets" / "romanprojekt"
+        scripts_dir = skill / "scripts"
+        refs.mkdir(parents=True)
+        assets.mkdir(parents=True)
+        scripts_dir.mkdir(parents=True)
+
+        canonical = (ROOT / "gpt-instructions.md").read_text(encoding="utf-8").strip()
+        skill_text = (
+            "---\n"
+            "name: romanskaparen\n"
+            "description: Stateful skrivassistent för planering, skrivande, revision, versionshantering och export av revisionslåsta romanprojekt.\n"
+            "---\n\n"
+            "# Romanskaparen\n\n"
+            "## Plugin-runtime\n\n"
+            "- Full filbaserad projektfunktion kräver host workspace, filesystem read/write, archive read/write, code execution och persistent state.\n"
+            "- Välj exakt en explicit indata-ZIP. Blockera om rätt ZIP saknas eller flera kandidater är oklara.\n"
+            "- project-manifest.json är auktoritativ state. Rekonstruera aldrig projektstate från chatt, EPUB eller PDF.\n"
+            "- Kör project_integrity.py verify före filändring och efter återöppnad leverans-ZIP.\n"
+            "- Varje commit ska använda explicit allow-list och öka revision exakt med 1.\n"
+            "- Utan code execution får ingen filbaserad ändring beskrivas som integritetsverifierad.\n"
+            "- Utan archive read/write får ingen revisionslåst ZIP-transaktion genomföras.\n"
+            "- Planering, synopsis, karaktärsarbete och textutkast kan fortsätta med begränsad host, men får inte framställas som verifierad projektstate.\n"
+            "- Ingen MCP-wrapper genereras.\n\n"
+            "## Kanoniskt beteendekontrakt\n\n"
+            + canonical
+            + "\n\n## References\n\n"
+            + "\n".join(f"- references/knowledge/{name}" for name in KNOWLEDGE_FILES)
+            + "\n\n## Assets\n\n- assets/romanprojekt/\n"
+            + "\n## Script resources\n\n"
+            + "- scripts/project_integrity.py (required)\n"
+            + "- scripts/publishing/fix-epub-after-pandoc.py (recommended)\n"
+        )
+        (skill / "SKILL.md").write_text(skill_text, encoding="utf-8")
+
+        for name in KNOWLEDGE_FILES:
+            copy_file(KNOWLEDGE_ROOT / name, refs / name)
+
+        script_map = {
+            "scripts/project_integrity.py": "project_integrity.py",
+            "publishing/fix-epub-after-pandoc.py": "publishing/fix-epub-after-pandoc.py",
+        }
+        for path in sorted(p for p in TEMPLATE_ROOT.rglob("*") if p.is_file()):
+            rel = path.relative_to(TEMPLATE_ROOT).as_posix()
+            if rel in script_map:
+                target = scripts_dir / script_map[rel]
+            else:
+                target = assets / rel
+            copy_file(path, target)
+
+        plugin_manifest = {
+            "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+            "name": "romanskaparen",
+            "version": version,
+            "description": "Stateful skrivassistent för revisionslåsta romanprojekt.",
+        }
+        (plugin / "plugin.json").write_text(json.dumps(plugin_manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+        runtime_tools = {
+            "project_integrity": "required",
+        }
+
+        runtime_contract = {
+            "schema_version": 1,
+            "runtime_id": "openai_plugin",
+            "version": version,
+            "capabilities": {
+                "workspace": "required_host_runtime",
+                "filesystem_read": "required_host_runtime",
+                "filesystem_write": "required_host_runtime",
+                "archive_read": "required_host_runtime",
+                "archive_write": "required_host_runtime",
+                "code_execution": "required_host_runtime",
+                "persistent_state": "required_host_runtime",
+            },
+            "workspace_state": {
+                "authority": "project_manifest",
+                "source_rule": "exactly_one_explicit_input_zip",
+                "revision_increment": "exactly_one",
+                "conversation_fallback": False,
+                "reconstruct_from_chat": False,
+                "reconstruct_from_export": False,
+            },
+            "tools": runtime_tools,
+            "adapter": {
+                "mode": "skills_first",
+                "compatibility": "ready_runtime_dependent",
+                "mcp_generated": False,
+                "script_resources": [
+                    {
+                        "path": "skills/romanskaparen/scripts/project_integrity.py",
+                        "requirement": "required",
+                        "materialize_to": "scripts/project_integrity.py",
+                    },
+                    {
+                        "path": "skills/romanskaparen/scripts/publishing/fix-epub-after-pandoc.py",
+                        "requirement": "recommended",
+                        "materialize_to": "publishing/fix-epub-after-pandoc.py",
+                    },
+                ],
+                "fallback_policy": {
+                    "without_workspace_or_archive": "block_file_based_project_transaction",
+                    "without_code_execution": "do_not_claim_integrity_verified_change",
+                    "without_persistent_state": "do_not_claim_stateful_project_management",
+                },
+            },
+        }
+        (plugin / "runtime-contract.json").write_text(json.dumps(runtime_contract, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        (plugin / "README.md").write_text(
+            "# Romanskaparen – OpenAI Plugin\n\n"
+            "Skills-first peer-runtime enligt GPT Byggaren 1.5.1. Full filbaserad funktion kräver hoststöd för workspace, archive, filesystem, code execution och persistent state. Ingen MCP-wrapper ingår.\n",
+            encoding="utf-8",
+        )
+        write_version(plugin / "VERSION", version)
+
+        files = []
+        for path in sorted(p for p in plugin.rglob("*") if p.is_file() and p.name != "MANIFEST.json"):
+            files.append({
+                "path": path.relative_to(plugin).as_posix(),
+                "sha256": sha256(path),
+                "bytes": path.stat().st_size,
+            })
+        (plugin / "MANIFEST.json").write_text(
+            json.dumps({
+                "schema_version": 1,
+                "runtime_id": "openai_plugin",
+                "version": version,
+                "entrypoint": "plugin.json",
+                "files": files,
+            }, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        plugin_zip = output_dir / f"romanskaparen-openai-plugin-v{version}.zip"
+        zip_dir(plugin, plugin_zip)
+
+    for path in (custom_zip, portable_zip, plugin_zip):
         verify_zip(path)
-    return [custom_zip, portable_zip]
+    return [custom_zip, portable_zip, plugin_zip]
 
 
 def main() -> int:
