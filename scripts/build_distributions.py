@@ -166,7 +166,7 @@ def copy_declared_tool_scripts(root: Path, cfg: dict, target: Path) -> list[str]
     return copied
 
 
-def copy_portable_skill_modules(root: Path, cfg: dict, target: Path) -> list[str]:
+def copy_portable_skill_modules(root: Path, cfg: dict, target: Path, *, canonical_templates_in_parent: bool = False) -> list[str]:
     """Compile canonical skills and copy their explicit resources for text-first runtimes.
 
     These files are included as usable references without assuming that Claude
@@ -186,6 +186,10 @@ def copy_portable_skill_modules(root: Path, cfg: dict, target: Path) -> list[str
                 if source.name in seen:
                     raise SystemExit(f"Colliding skill resource filename: {source.name}")
                 seen.add(source.name)
+                if category == "assets" and source.is_dir() and canonical_templates_in_parent and source.resolve().is_relative_to((root / cfg["structure"]["templates"]["path"]).resolve()):
+                    # Chat ZIP already carries this unchanged source tree under templates/.
+                    # Keep canonical Skill instruction text but do not duplicate its assets.
+                    continue
                 if category == "assets" and source.is_dir():
                     copy_tree_filtered(source, destination / category / source.name)
                 else:
@@ -234,7 +238,7 @@ def build_chat(root: Path, cfg: dict, build_root: Path, version: str) -> Path:
 
     instr_src = root / cfg["instructions"]["canonical"]
     (assistant / "instructions.md").write_text(projected_instruction(root, cfg, canonical_skill_definitions(cfg)), encoding="utf-8")
-    copy_portable_skill_modules(root, cfg, assistant / "skills")
+    copy_portable_skill_modules(root, cfg, assistant / "skills", canonical_templates_in_parent=True)
 
     starters_root = root / cfg["structure"]["conversation_starters"]["path"]
     if starters_root.exists():
@@ -259,7 +263,7 @@ def build_chat(root: Path, cfg: dict, build_root: Path, version: str) -> Path:
     for key in ["schemas", "templates"]:
         path = root / cfg["structure"][key]["path"]
         if path.exists():
-            copy_tree_filtered(path, out / key, ignore_names={"README.md"})
+            copy_tree_filtered(path, out / key, ignore_names={"README.md"} if key == "schemas" else set())
 
     declared_tool_scripts = copy_declared_tool_scripts(root, cfg, out / "scripts")
 
