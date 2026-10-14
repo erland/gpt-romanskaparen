@@ -19,6 +19,7 @@ jobs:
           [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]] || exit 1
           echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
       - run: python scripts/test_project_integrity_contract.py
+      - run: python scripts/test_zip_roundtrip.py
       - run: python scripts/validate_stateful_behavior_contract.py
       - run: python scripts/build_distributions.py --project-root . --version "${{ steps.v.outputs.version }}" --targets project,chat,plugin,claude_project,claude_skills,opencode
       - run: python scripts/validate_distributions.py --project-root .
