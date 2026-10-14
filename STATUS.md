@@ -60,3 +60,8 @@ GPT Byggaren 1.5.1-pluginjusteringen är implementerad och valideras i aktuell P
 ## Blockerare
 
 Inga.
+
+
+## Migration 1.1.0
+
+Från GPT Byggaren 1.6.25 byggs projekt, Chat ZIP, Plugin, Claude Project, Claude Skills och OpenCode. Runtime-paritet för filtransaktioner är villkorad av faktiskt tillgänglig Python-/ZIP-körning. Se MIGRATION-VALIDATION.md.
