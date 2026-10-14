@@ -42,6 +42,9 @@ model_robustness:
   instruction_adherence_evals: true
 instructions:
   canonical: gpt-instructions.md
+  mode: modular_skills
+  core: src/instructions/core.md
+  assembly: src/instructions/assembly.json
   file_work_manual: knowledge-upload/05-projektstruktur-och-synk.md
   project_template_bundle: project-template-bundle.md
   integrity_tool: templates/romanprojekt/scripts/project_integrity.py
