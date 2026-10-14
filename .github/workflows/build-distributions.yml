@@ -1,116 +1,30 @@
-name: Build Romanskaparen distributions
-
+name: Release
 on:
-  push:
-    branches: [main]
-  pull_request:
-  workflow_dispatch:
   release:
     types: [published]
-
-permissions:
-  contents: write
-
+permissions: {contents: write}
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install validation dependencies
-        run: python3 -m pip install pyyaml
-
-      - name: Lint GPT Builder project
-        run: python3 scripts/lint_gpt_project.py
-
-      - name: Verify generated project bundle
-        run: python3 scripts/build_distributions.py --check-bundle
-
-      - name: Resolve build version
-        id: version
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install pyyaml jsonschema pytest
+      - name: Get version from tag
+        id: v
         shell: bash
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          set -euo pipefail
-          if [[ "$EVENT_NAME" == "release" ]]; then
-            if [[ ! "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]; then
-              echo "Release-taggen måste vara SemVer med v-prefix, exempelvis v1.1.0: $RELEASE_TAG" >&2
-              exit 1
-            fi
-            version="${RELEASE_TAG#v}"
-          else
-            version="$(tr -d '[:space:]' < VERSION)"
-          fi
-          if [[ -z "$version" ]]; then
-            echo "Kunde inte fastställa build-version." >&2
-            exit 1
-          fi
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "Bygger Romanskaparen version $version"
-
-      - name: Validate GPT Builder test contract
-        run: python3 scripts/validate_gpt_builder_tests.py
-
-      - name: Test project integrity state transitions
-        run: python3 scripts/test_project_integrity_contract.py
-
-      - name: Validate stateful behavioral contract
-        run: python3 scripts/validate_stateful_behavior_contract.py
-
-      - name: Build distributions
-        run: python3 scripts/build_distributions.py --output-dir dist --version "${{ steps.version.outputs.version }}"
-
-      - name: Validate distributions
-        shell: bash
-        run: python3 scripts/validate_distributions.py dist/romanskaparen-custom-gpt-*.zip dist/romanskaparen-chat-*.zip dist/romanskaparen-openai-plugin-*.zip
-
-      - name: Build OpenCode runtime
-        run: python3 scripts/build_opencode_runtime.py --version "${{ steps.version.outputs.version }}"
-
-      - name: Validate OpenCode runtime
-        run: python3 scripts/validate_opencode_runtime.py --version "${{ steps.version.outputs.version }}"
-
-      - name: Build Project ZIP
-        run: python3 scripts/build_project_package.py --version "${{ steps.version.outputs.version }}"
-
-      - name: Validate runtime parity
-        run: python3 scripts/validate_runtime_parity.py
-
-      - name: Build delivery metadata
-        run: python3 scripts/build_delivery_metadata.py --version "${{ steps.version.outputs.version }}"
-
-      - name: Validate release readiness
-        run: python3 scripts/validate_release_readiness.py --version "${{ steps.version.outputs.version }}"
-
-      - name: Validate final project hygiene
-        run: python3 scripts/final_project_hygiene.py --project-root .
-
-      - name: Validate workflow parity
-        run: python3 scripts/validate_workflow_parity.py
-
-      - name: Verify reproducible release
-        run: python3 scripts/verify_reproducible_build.py --project-root . --version "${{ steps.version.outputs.version }}"
-
-      - name: Upload workflow artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: romanskaparen-distributions-v${{ steps.version.outputs.version }}
-          path: |
-            dist/*.zip
-            dist/SHA256SUMS.txt
-            dist/DELIVERY-MANIFEST.json
-          if-no-files-found: error
-
-      - name: Attach packages to published release
-        if: github.event_name == 'release'
-        env:
-          GH_TOKEN: ${{ github.token }}
+          TAG="${{ github.event.release.tag_name }}"
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]] || exit 1
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+      - run: python scripts/test_project_integrity_contract.py
+      - run: python scripts/test_zip_roundtrip.py
+      - run: python scripts/validate_stateful_behavior_contract.py
+      - run: python scripts/build_distributions.py --project-root . --version "${{ steps.v.outputs.version }}" --targets project,chat,plugin,claude_project,claude_skills,opencode
+      - run: python scripts/validate_distributions.py --project-root .
+      - run: python scripts/validate_workflow_parity.py
+      - run: python scripts/validate_release_readiness.py --version "${{ steps.v.outputs.version }}"
+      - name: Upload
+        env: {GH_TOKEN: '${{ github.token }}'}
         run: gh release upload "${{ github.event.release.tag_name }}" dist/*.zip dist/SHA256SUMS.txt dist/DELIVERY-MANIFEST.json --clobber

@@ -34,3 +34,8 @@ Runtime-mål:
 - OpenAI Plugin – ready / active (`ready_runtime_dependent`), med hostkrav för workspace, archive, filesystem, code execution och persistent state
 
 Migreringsplan: `docs/gpt-builder-1.5-migration-plan.md`.
+
+
+## Migration 1.1.0
+
+Från GPT Byggaren 1.6.25 byggs projekt, Chat ZIP, Plugin, Claude Project, Claude Skills och OpenCode. Runtime-paritet för filtransaktioner är villkorad av faktiskt tillgänglig Python-/ZIP-körning. Se MIGRATION-VALIDATION.md.

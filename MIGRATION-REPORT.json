@@ -1,0 +1,793 @@
+{
+  "migration": {
+    "source_class": "L2",
+    "target_contract_version": 1,
+    "status": "no_changes"
+  },
+  "decisions": [
+    {
+      "area": "capabilities",
+      "action": "preserve",
+      "confidence": "not_applicable"
+    },
+    {
+      "area": "artifacts",
+      "action": "preserve",
+      "confidence": "not_applicable"
+    },
+    {
+      "area": "workspace_state",
+      "action": "preserve",
+      "confidence": "not_applicable"
+    },
+    {
+      "area": "tools",
+      "action": "preserve",
+      "confidence": "not_applicable"
+    }
+  ],
+  "warnings": [],
+  "changes": {},
+  "opencode": {
+    "status": "ready",
+    "reasons": [],
+    "can_enable_automatically": true,
+    "required_actions": []
+  },
+  "plugin": {
+    "status": "reduced",
+    "reasons": [
+      "Required executable tools are not automatically realized by Plugin v1."
+    ],
+    "can_enable_automatically": false,
+    "required_actions": [
+      "Provide a supported host integration or keep Plugin suitability reduced."
+    ]
+  },
+  "safe_copy": {
+    "source_type": "directory",
+    "source_unchanged": true,
+    "project_root": ".",
+    "destination": "/mnt/data/migrate_work/romanskaparen-migrated"
+  },
+  "custom_gpt_retirement": {
+    "result": "changed",
+    "previously_enabled": true,
+    "legacy_configuration_preserved": true,
+    "automatic_plugin_conversion": false
+  },
+  "existing_project_assessment": {
+    "status": "review_required",
+    "project_contract_present": true,
+    "issues": [
+      "Legacy runtime.openai_plugin needs explicit mapping to runtime.plugin",
+      "No modern build_system.runtime_targets are declared",
+      "Previously enabled runtimes require independent parity review",
+      "Canonical instructions missing from expected modern source path"
+    ],
+    "dependency_inventory": {
+      "knowledge_files": [],
+      "candidate_scripts": [
+        "scripts/build_delivery_metadata.py",
+        "scripts/build_distributions.py",
+        "scripts/build_opencode_runtime.py",
+        "scripts/build_project_package.py",
+        "scripts/final_project_hygiene.py",
+        "scripts/lint_gpt_project.py",
+        "scripts/test_project_integrity_contract.py",
+        "scripts/validate_distributions.py",
+        "scripts/validate_gpt_builder_tests.py",
+        "scripts/validate_opencode_runtime.py",
+        "scripts/validate_release_readiness.py",
+        "scripts/validate_runtime_parity.py",
+        "scripts/validate_stateful_behavior_contract.py",
+        "scripts/validate_workflow_parity.py",
+        "scripts/verify_reproducible_build.py",
+        "templates/romanprojekt/scripts/project_integrity.py"
+      ],
+      "integration_manifests": [],
+      "tools_verified": false,
+      "knowledge_completeness_verified": false,
+      "review_required": true,
+      "limitations": [
+        "Packaged files do not prove tool availability or permissions.",
+        "A distribution may omit original Knowledge and source dependencies."
+      ]
+    },
+    "ready_for_modern_distribution_build": false,
+    "release_ready": false
+  },
+  "legacy_plugin_plan": {
+    "result": "review_required",
+    "plan": "reconstructed-canonical/plugin-migration-plan.json"
+  },
+  "apply": {
+    "result": "changed"
+  },
+  "engine_migration": {
+    "engine_required": "needs_review",
+    "engine_status": "review_required",
+    "engine_candidates": [
+      "scripts/build_delivery_metadata.py",
+      "scripts/build_opencode_runtime.py",
+      "scripts/build_project_package.py",
+      "scripts/final_project_hygiene.py",
+      "scripts/test_project_integrity_contract.py",
+      "scripts/validate_gpt_builder_tests.py",
+      "scripts/validate_opencode_runtime.py",
+      "scripts/validate_release_readiness.py",
+      "scripts/validate_runtime_parity.py",
+      "scripts/validate_stateful_behavior_contract.py",
+      "scripts/validate_workflow_parity.py",
+      "scripts/verify_reproducible_build.py",
+      "templates/romanprojekt/publishing/fix-epub-after-pandoc.py",
+      "templates/romanprojekt/scripts/project_integrity.py"
+    ],
+    "engine_configuration_present": false,
+    "engine_selftest_verified": false,
+    "plugin_repair_status": "legacy_plugin_requires_mapping",
+    "runtime_parity_status": "unverified",
+    "automatic_plugin_repair": false,
+    "automatic_engine_activation": false,
+    "release_ready": false,
+    "required_actions": [
+      "Classify candidate Python scripts as Plugin runtime requirements, tests, or build-only tools.",
+      "If executable Plugin scripts are required, declare engine.resources and a real engine.selftest.",
+      "Rebuild Plugin using the current canonical distribution builder; inspect Skills and resources.",
+      "Validate all five distributions and test the Plugin in its actual host.",
+      "Install/verify the current canonical builder only after reviewing the copied project schema and preserving project-specific files."
+    ]
+  },
+  "canonical_build_upgrade": {
+    "status": "blocked",
+    "stage": "plugin_mapping_review",
+    "reason": "Review legacy Plugin semantics before enabling modern Plugin",
+    "release_ready": false
+  },
+  "generic_discovery": {
+    "schema_version": 1,
+    "status": "analysis_required",
+    "source_files": [
+      {
+        "path": ".github/workflows/build-distributions.yml",
+        "sha256": "23a0f5a59e5575dc323b00d25c2285d0459de8ebc3c926fadebec24e4cde07fd",
+        "size": 4169,
+        "candidate_roles": [
+          "configuration_candidate"
+        ]
+      },
+      {
+        "path": ".gitignore",
+        "sha256": "1cca79eea56a215219518110b7fbae04dc3e5ffc722b0d744eee9456730b22ae",
+        "size": 102,
+        "candidate_roles": []
+      },
+      {
+        "path": "ANDRINGAR-FILSAKER-VERSION.md",
+        "sha256": "cf263966c17e2b3c26cfca87fceb7386a9a7671610cf83ab787ee96b9e058510",
+        "size": 4207,
+        "candidate_roles": []
+      },
+      {
+        "path": "JAMFORELSE-MED-URSPRUNGSINSTRUKTION.md",
+        "sha256": "789a8ddbdb7ee558744f69fabb284724986f1c6cf8392f84423121efeff6ee5f",
+        "size": 1366,
+        "candidate_roles": []
+      },
+      {
+        "path": "PROJECT.md",
+        "sha256": "16736009e219598beaf4876b6505bc6825744b9a8d61886d08cf13cb9068992f",
+        "size": 1459,
+        "candidate_roles": []
+      },
+      {
+        "path": "README.md",
+        "sha256": "d6f6c2a5ce1a5efd1b8304abafde71aab18c51778bde0938490cd4ad469fbc05",
+        "size": 7584,
+        "candidate_roles": []
+      },
+      {
+        "path": "SETUP.md",
+        "sha256": "e911c0aacb031125a813b07021c2f1e530ce9a30050e4544df59a4a3e2122d72",
+        "size": 5174,
+        "candidate_roles": []
+      },
+      {
+        "path": "STATUS.md",
+        "sha256": "c0756cd9eeca45674ecc462c6cc8637d76a2e6eb3d0974cb24143642f01eb941",
+        "size": 3529,
+        "candidate_roles": []
+      },
+      {
+        "path": "VERSION",
+        "sha256": "59854984853104df5c353e2f681a15fc7924742f9a2e468c29af248dce45ce03",
+        "size": 6,
+        "candidate_roles": []
+      },
+      {
+        "path": "conversation-starters.md",
+        "sha256": "ebfdea223833ddc925b987bec0013d702430f623d9a387c0accd5c2097873b2a",
+        "size": 693,
+        "candidate_roles": []
+      },
+      {
+        "path": "docs/gpt-builder-1.5-migration-plan.md",
+        "sha256": "5581d263ceb8f12d9dfa1ba09d422045cb76695f633961c1eeeee1f664ed5a0c",
+        "size": 1935,
+        "candidate_roles": [
+          "knowledge_candidate"
+        ]
+      },
+      {
+        "path": "gpt-instructions.md",
+        "sha256": "8d2c13afa4adae0ade6e9f3705d7658caf81826489da55eb40581b6207ea64fc",
+        "size": 7573,
+        "candidate_roles": []
+      },
+      {
+        "path": "gpt-project.yaml",
+        "sha256": "eb2b47bb78557713c7d14cb7f5a0c8b9c38aebf0ab55d102c7b54fe86e20449c",
+        "size": 8926,
+        "candidate_roles": [
+          "configuration_candidate"
+        ]
+      },
+      {
+        "path": "knowledge-upload/01-arbetsflode-och-nyborjarstod.md",
+        "sha256": "22fc7d1950ef70dd6762096240420ebaa238a0d1489929a97929bda9c64762ed",
+        "size": 2666,
+        "candidate_roles": []
+      },
+      {
+        "path": "knowledge-upload/02-berattelsehantverk.md",
+        "sha256": "a904af80a1f1b0d151dafccca96288f8eb81ce7fe489b401184e09825fedc132",
+        "size": 8496,
+        "candidate_roles": []
+      },
+      {
+        "path": "knowledge-upload/03-karaktarer-varld-och-kontinuitet.md",
+        "sha256": "7d5861fad17201796aeff212824bb440dae8a44d591cd180cfab05c4cf72431f",
+        "size": 2047,
+        "candidate_roles": []
+      },
+      {
+        "path": "knowledge-upload/04-genreguider.md",
+        "sha256": "89c2cb7135e09cf4f9ff12300bc3511464330a9f8ff8413f41b8e127b7131736",
+        "size": 10787,
+        "candidate_roles": []
+      },
+      {
+        "path": "knowledge-upload/05-projektstruktur-och-synk.md",
+        "sha256": "6ce77fe3f5e0870be9f7e7488481f594220b107f8d7257b3a214c1265b5b6cff",
+        "size": 21556,
+        "candidate_roles": []
+      },
+      {
+        "path": "portable/START-HERE.md",
+        "sha256": "3358e2617b07dde0f614ca6c9697b351136c5a53c2c742d422fa5ff24534ac6b",
+        "size": 1732,
+        "candidate_roles": []
+      },
+      {
+        "path": "project-status.yaml",
+        "sha256": "25b5ae21757fb7e0b823f1b56266a145a6a9b54d727d63be0c9a7151f46a2e44",
+        "size": 1855,
+        "candidate_roles": [
+          "configuration_candidate"
+        ]
+      },
+      {
+        "path": "project-template-bundle.md",
+        "sha256": "b14a0f98b31a9422db62abe32b7f9916abb1d8bd6e2361dcccf265a2b8fe22a6",
+        "size": 50001,
+        "candidate_roles": []
+      },
+      {
+        "path": "reconstructed-canonical/plugin-migration-plan.json",
+        "sha256": "12d609664f50860c0007e8c116ed77d484ba8bf50225a4ab7288cf7ca5f4e14c",
+        "size": 1378,
+        "candidate_roles": [
+          "configuration_candidate"
+        ]
+      },
+      {
+        "path": "runtime-contracts/chatgpt-chat.json",
+        "sha256": "2c41ee89cc0baada85939fb5924a460a6258c0a22e258f2747043ed0d994926d",
+        "size": 1366,
+        "candidate_roles": [
+          "configuration_candidate"
+        ]
+      },
+      {
+        "path": "runtime-contracts/chatgpt-custom.json",
+        "sha256": "94403e4fcb85f4858e439e1822f72ac9282db06f3f448f8186ad691e922c1d17",
+        "size": 1376,
+        "candidate_roles": [
+          "configuration_candidate"
+        ]
+      },
+      {
+        "path": "runtime-contracts/opencode.json",
+        "sha256": "2090bf88abe4c7965cf34deadd714a2f40cfa8d9c4ed2d3322524783fa6691fd",
+        "size": 1500,
+        "candidate_roles": [
+          "configuration_candidate"
+        ]
+      },
+      {
+        "path": "runtime-parity.yaml",
+        "sha256": "970a2de6991d988e4a5a0603fb8fa42cc1f75b8e811e33bbb811fe6d6c42972b",
+        "size": 1019,
+        "candidate_roles": [
+          "configuration_candidate"
+        ]
+      },
+      {
+        "path": "schemas/artifact-contract.schema.json",
+        "sha256": "750cf18e967c914ac0e46c5feef7cf2a2bcad7d714e5a832c8d1904116cc78e9",
+        "size": 291,
+        "candidate_roles": [
+          "configuration_candidate"
+        ]
+      },
+      {
+        "path": "schemas/capability-contract.schema.json",
+        "sha256": "6948116a52e184c2f1bad0131179b8db5ccda796b46fbdb7788570215cc5cd97",
+        "size": 285,
+        "candidate_roles": [
+          "configuration_candidate"
+        ]
+      },
+      {
+        "path": "schemas/test-manifest.schema.json",
+        "sha256": "41584a708a5ef412cf2398b9b548f4495ec50e9c5caa303d4c1dfccb22b82329",
+        "size": 299,
+        "candidate_roles": [
+          "configuration_candidate"
+        ]
+      },
+      {
+        "path": "schemas/tool-contract.schema.json",
+        "sha256": "802ce02d179cdcd43419ed0c00f6445fe737e372f24d0756fd329480df9e278e",
+        "size": 264,
+        "candidate_roles": [
+          "configuration_candidate"
+        ]
+      },
+      {
+        "path": "schemas/workspace-state-contract.schema.json",
+        "sha256": "6906e39c6bab2e5aa72097a5ba350dd746ba692757182a0d60f2a9bd2f8b644f",
+        "size": 400,
+        "candidate_roles": [
+          "configuration_candidate"
+        ]
+      },
+      {
+        "path": "scripts/build_delivery_metadata.py",
+        "sha256": "c66cac2094f64c119c99bccdbde109e5f4396f20a22e3971363065d974f73ff5",
+        "size": 1660,
+        "candidate_roles": [
+          "script_candidate"
+        ]
+      },
+      {
+        "path": "scripts/build_distributions.py",
+        "sha256": "3fe795cce9069a05bb291666ee5ebcdaf3b57b6478c1e06b9dd79c25124ff981",
+        "size": 18414,
+        "candidate_roles": [
+          "script_candidate"
+        ]
+      },
+      {
+        "path": "scripts/build_opencode_runtime.py",
+        "sha256": "38ba7456c2fb59bd94dd1991c8e6e64a6c3576a4ef1ad5915a2bed5b72d57f31",
+        "size": 4641,
+        "candidate_roles": [
+          "script_candidate"
+        ]
+      },
+      {
+        "path": "scripts/build_project_package.py",
+        "sha256": "47200f938a51e3b4e707566647dff63ddbbba5fb5891c4e8360922747796d56a",
+        "size": 2563,
+        "candidate_roles": [
+          "script_candidate"
+        ]
+      },
+      {
+        "path": "scripts/final_project_hygiene.py",
+        "sha256": "b79f3f859101d4234d4f935395dad0b3ffff4319e1d28a8323ab4866f6eefc1a",
+        "size": 2372,
+        "candidate_roles": [
+          "script_candidate"
+        ]
+      },
+      {
+        "path": "scripts/lint_gpt_project.py",
+        "sha256": "c394fcacff12e69f0a5ce18579fba83c3cce17e28a678f6b7eba83ebb68f5b83",
+        "size": 8086,
+        "candidate_roles": [
+          "script_candidate"
+        ]
+      },
+      {
+        "path": "scripts/test_project_integrity_contract.py",
+        "sha256": "50b17acf67169d8811b041f60e6244569daee186ee90287d984499169c009e49",
+        "size": 4395,
+        "candidate_roles": [
+          "script_candidate"
+        ]
+      },
+      {
+        "path": "scripts/validate_distributions.py",
+        "sha256": "819a2c0e6e915c1140b2ff891e5b22f3987318fc375bb46f7196d0a25d181df1",
+        "size": 10391,
+        "candidate_roles": [
+          "script_candidate"
+        ]
+      },
+      {
+        "path": "scripts/validate_gpt_builder_tests.py",
+        "sha256": "2affe9abb2fb9481551f30bee04bc9abfe4cca413c8c50b2541db412baffa4c4",
+        "size": 1452,
+        "candidate_roles": [
+          "script_candidate"
+        ]
+      },
+      {
+        "path": "scripts/validate_opencode_runtime.py",
+        "sha256": "9085310abe5d3b41f65181e1a05291614cbbc4b5edc94877e69cbbc398be0537",
+        "size": 3597,
+        "candidate_roles": [
+          "script_candidate"
+        ]
+      },
+      {
+        "path": "scripts/validate_release_readiness.py",
+        "sha256": "50ea31a0f340aa93885f2a80391c58ee66cbc41770f10613f8b197cc4869755d",
+        "size": 2406,
+        "candidate_roles": [
+          "script_candidate"
+        ]
+      },
+      {
+        "path": "scripts/validate_runtime_parity.py",
+        "sha256": "38b5ed79f819e913b94fa98dd12f8df2fe540828f3aa8859258d068fde6dda54",
+        "size": 2507,
+        "candidate_roles": [
+          "script_candidate"
+        ]
+      },
+      {
+        "path": "scripts/validate_stateful_behavior_contract.py",
+        "sha256": "e11d7dfddfe4b3673a247f3eab69078dd5d56d232825f0fe86a49e8f1e011e48",
+        "size": 899,
+        "candidate_roles": [
+          "script_candidate"
+        ]
+      },
+      {
+        "path": "scripts/validate_workflow_parity.py",
+        "sha256": "a2987b3c32da3720972e1d509dc1062f13f71d7c96b7bc4c2f8747f894d1daef",
+        "size": 1676,
+        "candidate_roles": [
+          "script_candidate"
+        ]
+      },
+      {
+        "path": "scripts/verify_reproducible_build.py",
+        "sha256": "ac530eaaf2521f9e62bf90a962219f16364dfcb0aeaa6934e0815417f6445aaf",
+        "size": 1777,
+        "candidate_roles": [
+          "script_candidate"
+        ]
+      },
+      {
+        "path": "templates/romanprojekt/README.md",
+        "sha256": "24138a8e36f3ff0aea6b749d12e8ddb44736c617359f2c8d04315108561644ea",
+        "size": 2242,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/arbetslogg.md",
+        "sha256": "720abf56b84ebc79e13b2368bf10b6bfc98e68ad3b7e6ee287d355e410524da2",
+        "size": 187,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/exports/README.md",
+        "sha256": "e11347a7756df44ec79cf856b45de5f51f4360f109572882805be3da37fc1228",
+        "size": 669,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/exports/exportlogg.md",
+        "sha256": "a94dcd28dec42ce5bef0862ec9a66d868a07aa414489603cfcc8ad80409375ab",
+        "size": 129,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/kapitel/kapitelmall.md",
+        "sha256": "2232ab9a6d482ad933bd6e747f945bbac7e5b4156c7dafb556bdcde886db5336",
+        "size": 36,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/kapitelnoteringar.md",
+        "sha256": "50dece3e1fd0fc7f6a5717189faa4f0fadd78d3fecdd5cf6b52c5b5212077f70",
+        "size": 227,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/kapitelplan.md",
+        "sha256": "e91a4c0e47bacfe7dc82d46a90c3eaf633309c310cafd5e611e9cb8b46583c5f",
+        "size": 247,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/karaktarer/antagonist.md",
+        "sha256": "ef47af6cbaad886604970b0affd291ac888ece2dfb5a4dc5c00b03ba8b195493",
+        "size": 199,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/karaktarer/bifigurer.md",
+        "sha256": "3dc16e9616cd82825c4a9f78acfdf67d34fb0cc0336ff2a4310c787a14751659",
+        "size": 216,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/karaktarer/huvudperson.md",
+        "sha256": "7ffa7c3f14188eb5af6d4d3f92e5d04cd7f941c81f9c5a6f53363baccb88a5af",
+        "size": 173,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/kontinuitetsanteckningar.md",
+        "sha256": "908c11bf7c852df60d845ab9d0fc84309a95f11c733623d5ab03a4e7c189703f",
+        "size": 221,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/project-index.md",
+        "sha256": "5db891cbc3b608a50412f52a1f8b0f74ea72a5f63b1404c29435042b2227104a",
+        "size": 1957,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/project-manifest.json",
+        "sha256": "71ef9237404788b4bae79c826843ebc338ee8519cde392b4ddc0cacfdf2bbdfa",
+        "size": 680,
+        "candidate_roles": [
+          "configuration_candidate"
+        ]
+      },
+      {
+        "path": "templates/romanprojekt/projektstatus.md",
+        "sha256": "f5083c199390d150e55a45ff1a7fa7f4b91e3a702aacaa4363080879fd55d794",
+        "size": 934,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/publishing/build-notes.md",
+        "sha256": "6e7a1af5da2b8282cb4d8c850ca4b7539864c89c68ace46252222e3730980fb1",
+        "size": 1398,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/publishing/epub.css",
+        "sha256": "cf9bb54036447f4566e74bb871044f0c09d4b79f89415c79af3d5be4192e7ca7",
+        "size": 1264,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/publishing/fix-epub-after-pandoc.py",
+        "sha256": "cc3c8c62258a9de6ee5f7160e881a526665b094792a0cf3630b5ede5a408ba74",
+        "size": 3734,
+        "candidate_roles": [
+          "script_candidate"
+        ]
+      },
+      {
+        "path": "templates/romanprojekt/publishing/metadata.yaml",
+        "sha256": "92807df163b8dca44330e702e6235c7f1a0a73496f7472b4f7c851934c001221",
+        "size": 193,
+        "candidate_roles": [
+          "configuration_candidate"
+        ]
+      },
+      {
+        "path": "templates/romanprojekt/publishing/pdf-template.tex",
+        "sha256": "d10452049b1ee995057dd8793de82546a0e965c55266e4d8a0efe1e7a1199ff3",
+        "size": 525,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/revision-log.md",
+        "sha256": "79799ebbd5ee260f5be37dd8a21d5449667e249879aafc069f042d42cac165bc",
+        "size": 223,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/revisionsonskemal.md",
+        "sha256": "9edb819ef3ba285660d759cfaa5334babbe7c0940d24feeb73d887c3a8d29088",
+        "size": 182,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/roman-bibel.md",
+        "sha256": "7bcc25869217314ca7190b7b642f4853f3e02bb86494b9b6dd3c6ee675710439",
+        "size": 399,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/scripts/project_integrity.py",
+        "sha256": "55befd42c38c88b6bbad408814528dc393baaf31b0fd3961468b35a58fb501d4",
+        "size": 30563,
+        "candidate_roles": [
+          "script_candidate"
+        ]
+      },
+      {
+        "path": "templates/romanprojekt/stilguide.md",
+        "sha256": "2afa1245b4c35ab96a2a0c61aff26cab080d8409dc22d747517549a481fcae4d",
+        "size": 184,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/synopsis.md",
+        "sha256": "e5f3a1a4b33e0a5269244f25e117df9c0a75d8638b8112084844d03dbf5af602",
+        "size": 230,
+        "candidate_roles": []
+      },
+      {
+        "path": "templates/romanprojekt/tidslinje.md",
+        "sha256": "4107117be2b36899529969fb762a924453a7cb0120e6445db0704450bf68e412",
+        "size": 158,
+        "candidate_roles": []
+      },
+      {
+        "path": "tests/stateful-regression-cases.json",
+        "sha256": "839d2e3a9e5efd448ef4842797a6b094895b3e03f867844975ec58df5e349d76",
+        "size": 3027,
+        "candidate_roles": [
+          "configuration_candidate"
+        ]
+      },
+      {
+        "path": "tests/test-manifest.yaml",
+        "sha256": "cdec01c8f5bc0844f7d0c615afdb51b7ea818139d3f7e0f10e1c5bc0cd8bcdac",
+        "size": 995,
+        "candidate_roles": [
+          "configuration_candidate"
+        ]
+      }
+    ],
+    "candidates": {
+      "instruction_candidate": [],
+      "knowledge_candidate": [
+        "docs/gpt-builder-1.5-migration-plan.md"
+      ],
+      "script_candidate": [
+        "scripts/build_delivery_metadata.py",
+        "scripts/build_distributions.py",
+        "scripts/build_opencode_runtime.py",
+        "scripts/build_project_package.py",
+        "scripts/final_project_hygiene.py",
+        "scripts/lint_gpt_project.py",
+        "scripts/test_project_integrity_contract.py",
+        "scripts/validate_distributions.py",
+        "scripts/validate_gpt_builder_tests.py",
+        "scripts/validate_opencode_runtime.py",
+        "scripts/validate_release_readiness.py",
+        "scripts/validate_runtime_parity.py",
+        "scripts/validate_stateful_behavior_contract.py",
+        "scripts/validate_workflow_parity.py",
+        "scripts/verify_reproducible_build.py",
+        "templates/romanprojekt/publishing/fix-epub-after-pandoc.py",
+        "templates/romanprojekt/scripts/project_integrity.py"
+      ],
+      "configuration_candidate": [
+        ".github/workflows/build-distributions.yml",
+        "gpt-project.yaml",
+        "project-status.yaml",
+        "reconstructed-canonical/plugin-migration-plan.json",
+        "runtime-contracts/chatgpt-chat.json",
+        "runtime-contracts/chatgpt-custom.json",
+        "runtime-contracts/opencode.json",
+        "runtime-parity.yaml",
+        "schemas/artifact-contract.schema.json",
+        "schemas/capability-contract.schema.json",
+        "schemas/test-manifest.schema.json",
+        "schemas/tool-contract.schema.json",
+        "schemas/workspace-state-contract.schema.json",
+        "templates/romanprojekt/project-manifest.json",
+        "templates/romanprojekt/publishing/metadata.yaml",
+        "tests/stateful-regression-cases.json",
+        "tests/test-manifest.yaml"
+      ]
+    },
+    "analysis_contract": {
+      "purpose": "Classify project behavior, knowledge, dependencies and workflows based on evidence",
+      "evidence_rule": "Every proposed fact must cite a source_files.path and SHA-256",
+      "uncertainty_rule": "Mark unresolved source ambiguity for review; do not invent behavior",
+      "output": "platform-neutral reviewed project model before runtime configuration"
+    },
+    "release_ready": false,
+    "runtime_activated": false
+  },
+  "project_hygiene": {
+    "status": "review_required",
+    "missing_documents": [
+      "docs/development-plan.md"
+    ],
+    "possible_stale_versions": [
+      {
+        "file": "PROJECT.md",
+        "mentioned_versions": [
+          "1.5.1"
+        ]
+      },
+      {
+        "file": "STATUS.md",
+        "mentioned_versions": [
+          "1.5.1"
+        ]
+      }
+    ],
+    "ci_references_to_reconcile": [],
+    "legacy_validator_candidates": [
+      "scripts/validate_workflow_parity.py",
+      "scripts/validate_release_readiness.py",
+      "scripts/validate_runtime_parity.py"
+    ],
+    "broken_document_links": [],
+    "open_development_checklist_items": [],
+    "open_migration_checklists": [],
+    "unresolved_status_claims": [],
+    "files_deleted": [],
+    "documentation_modified": false,
+    "required_actions": [
+      "Update README, PROJECT, STATUS, development plan and migration checklist together.",
+      "Compare legacy validator behavior with canonical checks before deleting any file.",
+      "Reconcile CI identifiers and actual validation evidence; do not claim host parity from ZIP builds.",
+      "Verify no documentation points at removed paths before release."
+    ]
+  },
+  "migration_steps": [
+    {
+      "id": "inventory",
+      "title": "Inventera källprojekt",
+      "status": "completed"
+    },
+    {
+      "id": "model",
+      "title": "Granska projektmodell och runtime-mappning",
+      "status": "completed"
+    },
+    {
+      "id": "engine",
+      "title": "Bedöm och installera kanonisk byggmotor",
+      "status": "pending_or_blocked"
+    },
+    {
+      "id": "distributions",
+      "title": "Bygg och kontrollera fem distributioner",
+      "status": "pending_or_blocked"
+    },
+    {
+      "id": "hygiene",
+      "title": "Uppdatera dokumentation och granska äldre filer",
+      "status": "review_required"
+    },
+    {
+      "id": "release",
+      "title": "Slutverifiera runtime och release",
+      "status": "pending"
+    }
+  ],
+  "next_step": {
+    "id": "engine",
+    "title": "Bedöm och installera kanonisk byggmotor"
+  }
+}

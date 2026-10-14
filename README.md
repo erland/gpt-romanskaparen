@@ -149,3 +149,8 @@ Reducerade/inaktiva runtimes:
 OpenAI Plugin är skills-first med `plugin.json` direkt i ZIP-roten. Knowledge paketeras som references, romanprojektmallen som assets och `project_integrity.py` som required script resource. Full filbaserad funktion kräver host workspace, filesystem read/write, archive read/write, code execution och persistent state. `project-manifest.json` är fortsatt auktoritativ state och projekt får inte rekonstrueras från chatthistorik eller export.
 
 En release bygger Project, Chat, Custom GPT, OpenCode och OpenAI Plugin ZIP-paket samt `SHA256SUMS.txt` och `DELIVERY-MANIFEST.json`. Runtime parity, state-transition tests, behavioral failure-cases, release readiness, project hygiene, workflow parity och reproducible release är blockerande kvalitetsgrindar.
+
+
+## Migration 1.1.0
+
+Från GPT Byggaren 1.6.25 byggs projekt, Chat ZIP, Plugin, Claude Project, Claude Skills och OpenCode. Runtime-paritet för filtransaktioner är villkorad av faktiskt tillgänglig Python-/ZIP-körning. Se MIGRATION-VALIDATION.md.

@@ -1,0 +1,18 @@
+name: CI
+on: [push, pull_request, workflow_dispatch]
+permissions: {contents: read}
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install pyyaml jsonschema pytest
+      - run: python scripts/lint_gpt_project.py --project-root .
+      - run: python scripts/test_project_integrity_contract.py
+      - run: python scripts/test_zip_roundtrip.py
+      - run: python scripts/validate_stateful_behavior_contract.py
+      - run: python scripts/build_distributions.py --project-root . --version 0.0.0-ci --targets project,chat,plugin,claude_project,claude_skills,opencode
+      - run: python scripts/validate_distributions.py --project-root .
+      - run: python scripts/validate_workflow_parity.py
