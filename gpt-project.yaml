@@ -447,6 +447,8 @@ skills:
     name: romanplanering
     description: Starta projekt, synopsis, premiss och kapitelplan
     source: src/instructions/skills/romanplanering/behavior.md
+    assets:
+    - templates/romanprojekt
     scripts: []
     references: []
   - id: kapitelproduktion
@@ -459,6 +461,8 @@ skills:
     name: revisionssakerhet
     description: Arbeta med ZIP, manifest, revisioner och integritetsverifiering
     source: src/instructions/skills/revisionssakerhet/behavior.md
+    assets:
+    - templates/romanprojekt
     scripts:
     - templates/romanprojekt/scripts/project_integrity.py
     references:

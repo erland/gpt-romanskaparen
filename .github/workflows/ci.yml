@@ -18,4 +18,5 @@ jobs:
       - run: python scripts/validate_stateful_behavior_contract.py
       - run: python scripts/build_distributions.py --project-root . --version 0.0.0-ci --targets project,chat,plugin,claude_project,claude_skills,opencode
       - run: python scripts/validate_distributions.py --project-root .
+      - run: python scripts/test_portable_template_assets.py
       - run: python scripts/validate_workflow_parity.py

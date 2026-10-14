@@ -103,7 +103,7 @@ def validate_claude_skills(root: Path, cfg: dict) -> list[str]:
             errors.append(f"Claude Skills missing {ident}/SKILL.md")
         for category in ("references", "assets", "scripts"):
             for source in skill.get(category, []) or []:
-                if not (skill_dir / category / Path(source).name).is_file():
+                if not ((skill_dir / category / Path(source).name).is_dir() if category == "assets" and (root / source).is_dir() else (skill_dir / category / Path(source).name).is_file()):
                     errors.append(f"Claude Skills missing {ident}/{category}/{Path(source).name}")
     return errors
 
