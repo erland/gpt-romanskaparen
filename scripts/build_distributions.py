@@ -263,7 +263,7 @@ def build_chat(root: Path, cfg: dict, build_root: Path, version: str) -> Path:
     for key in ["schemas", "templates"]:
         path = root / cfg["structure"][key]["path"]
         if path.exists():
-            copy_tree_filtered(path, out / key, ignore_names={"README.md"})
+            copy_tree_filtered(path, out / key, ignore_names={"README.md"} if key == "schemas" else set())
 
     declared_tool_scripts = copy_declared_tool_scripts(root, cfg, out / "scripts")
 
