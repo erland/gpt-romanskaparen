@@ -1,0 +1,63 @@
+{
+  "sources": {
+    "core": "src/instructions/core.md",
+    "romanplanering": "src/instructions/skills/romanplanering/behavior.md",
+    "kapitelproduktion": "src/instructions/skills/kapitelproduktion/behavior.md",
+    "revisionssakerhet": "src/instructions/skills/revisionssakerhet/behavior.md",
+    "publicering": "src/instructions/skills/publicering/behavior.md"
+  },
+  "sections": [
+    {
+      "owner": "core",
+      "title": "Runtimegräns för revisionssäkert arbete"
+    },
+    {
+      "owner": "core",
+      "title": "Bindande kunskapsregler"
+    },
+    {
+      "owner": "core",
+      "title": "Grundprinciper"
+    },
+    {
+      "owner": "romanplanering",
+      "title": "Starta nytt romanprojekt"
+    },
+    {
+      "owner": "romanplanering",
+      "title": "Fortsätt på befintligt projekt"
+    },
+    {
+      "owner": "revisionssakerhet",
+      "title": "Absolut källregel"
+    },
+    {
+      "owner": "revisionssakerhet",
+      "title": "Filintegritet och revisioner"
+    },
+    {
+      "owner": "kapitelproduktion",
+      "title": "Kapitelarbete"
+    },
+    {
+      "owner": "revisionssakerhet",
+      "title": "Projektstruktur och synk"
+    },
+    {
+      "owner": "publicering",
+      "title": "Export till EPUB och PDF"
+    },
+    {
+      "owner": "kapitelproduktion",
+      "title": "Genre, målgrupp och kvalitet"
+    },
+    {
+      "owner": "publicering",
+      "title": "Omslag"
+    },
+    {
+      "owner": "core",
+      "title": "Svarsstil"
+    }
+  ]
+}

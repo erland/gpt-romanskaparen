@@ -4,12 +4,15 @@ permissions: {contents: read}
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
       - run: pip install pyyaml jsonschema pytest
       - run: python scripts/lint_gpt_project.py --project-root .
+      - run: python scripts/test_modular_parity.py
       - run: python scripts/test_project_integrity_contract.py
       - run: python scripts/test_zip_roundtrip.py
       - run: python scripts/validate_stateful_behavior_contract.py
