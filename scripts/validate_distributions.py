@@ -323,7 +323,18 @@ def validate_plugin(root: Path, cfg: dict) -> list[str]:
     }
     for p in build.rglob("*"):
         rel = p.relative_to(build)
-        if any(part in forbidden_parts for part in rel.parts):
+        # .github files here are inert templates for generated novel projects,
+        # never workflows at the Plugin ZIP root or in executable skill folders.
+        novel_asset = (
+            len(rel.parts) >= 5
+            and rel.parts[0] == "skills"
+            and rel.parts[1] in {"romanplanering", "revisionssakerhet"}
+            and rel.parts[2:4] == ("assets", "romanprojekt")
+        )
+        banned = set(forbidden_parts)
+        if novel_asset:
+            banned.discard(".github")
+        if any(part in banned for part in rel.parts):
             errors.append(f"Forbidden plugin runtime path: {rel}")
 
     return errors
