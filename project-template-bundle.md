@@ -1563,3 +1563,189 @@ Layout och metadata styrs i `publishing/`. Exporter ska kunna återskapas från 
 - Vid revision av ett kapitel får inga andra kapitelfiler ändras.
 - Skapa en ny revision, paketera hela projektet, packa upp leveranszipen och kör `verify` igen.
 - Leverera revisionskvittens tillsammans med zipen.
+
+## `.github/workflows/verify.yml`
+
+`````yaml
+name: Verify novel
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify project and chapter hashes
+        run: |
+          python scripts/project_integrity.py verify .
+          python scripts/project_integrity.py status .
+`````
+
+## `.github/workflows/build-book.yml`
+
+`````yaml
+name: Build book
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+permissions:
+  contents: read
+jobs:
+  book:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned build toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc texlive-xetex texlive-latex-extra texlive-fonts-recommended
+      - name: Verify immutable manuscript
+        run: python scripts/project_integrity.py verify .
+      - name: Build EPUB and PDF
+        run: python scripts/build_book.py --project-root . --output-dir "${{ runner.temp }}/roman-book"
+      - name: Validate deliverables
+        run: python scripts/validate_book.py --project-root . --output-dir "${{ runner.temp }}/roman-book"
+      - name: Verify no source changes
+        run: |
+          python scripts/project_integrity.py verify .
+          git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        with:
+          name: roman-epub-pdf
+          path: ${{ runner.temp }}/roman-book/roman.*
+          if-no-files-found: error
+`````
+
+## `scripts/build_book.py`
+
+`````python
+#!/usr/bin/env python3
+"""Read-only, repeatable EPUB/PDF export from a verified Romanskaparen project."""
+from __future__ import annotations
+import argparse
+import json
+import re
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+CHAPTER = re.compile(r"kapitel-(\d{2,})\.md$")
+
+def run(command: list[str]) -> None:
+    subprocess.run(command, check=True)
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--project-root", type=Path, default=ROOT)
+    parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--format", choices=["epub", "pdf", "both"], default="both")
+    args = parser.parse_args()
+    root = args.project_root.resolve()
+    output = args.output_dir.resolve()
+    if root == output or root in output.parents:
+        raise SystemExit("Output directory must be outside the tracked project tree")
+    run([sys.executable, str(root / "scripts/project_integrity.py"), "verify", str(root)])
+    manifest = json.loads((root / "project-manifest.json").read_text(encoding="utf-8"))
+    chapters = sorted((root / "kapitel").glob("kapitel-*.md"))
+    numbers = [int(CHAPTER.fullmatch(p.name).group(1)) for p in chapters if CHAPTER.fullmatch(p.name)]
+    if not numbers or len(numbers) != len(chapters) or numbers != list(range(1, len(numbers) + 1)):
+        raise SystemExit("Missing, duplicate, or noncanonical chapter files")
+    if len(numbers) != manifest["chapters"]["count"]:
+        raise SystemExit("Chapter inventory differs from manifest")
+    output.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory() as tmp:
+        source = Path(tmp) / "book.md"
+        # Original chapter bytes are never modified. Only output rendering is normalized.
+        source.write_text("\n\n".join(p.read_text(encoding="utf-8") for p in chapters), encoding="utf-8")
+        title = root / "publishing/metadata.yaml"
+        css = root / "publishing/epub.css"
+        options = ["pandoc", str(source), "--standalone", "--toc", "--toc-depth=1", "--metadata=lang:sv-SE"]
+        if title.exists():
+            options += ["--metadata-file", str(title)]
+        if args.format in ("epub", "both"):
+            target = output / "roman.epub"
+            cmd = options + ["--split-level=1", "--to=epub3", "--output", str(target)]
+            if css.exists():
+                cmd += ["--css", str(css)]
+            run(cmd)
+            fixer = root / "publishing/fix-epub-after-pandoc.py"
+            if fixer.exists():
+                run([sys.executable, str(fixer), str(target), str(Path(tmp) / "fixed.epub")])
+                (Path(tmp) / "fixed.epub").replace(target)
+        if args.format in ("pdf", "both"):
+            target = output / "roman.pdf"
+            cmd = options + ["--pdf-engine=xelatex", "--top-level-division=chapter",
+                              "-V", "documentclass=book", "-V", "papersize=a5",
+                              "-V", "geometry:margin=18mm", "-V", "fontsize=11pt",
+                              "--output", str(target)]
+            header = root / "publishing/pdf-template.tex"
+            if header.exists():
+                cmd += ["--include-in-header", str(header)]
+            run(cmd)
+    run([sys.executable, str(root / "scripts/project_integrity.py"), "verify", str(root)])
+    return 0
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+`````
+
+## `scripts/validate_book.py`
+
+`````python
+#!/usr/bin/env python3
+"""Check book outputs without changing sources or the project manifest."""
+from __future__ import annotations
+import argparse
+import json
+import re
+import sys
+import zipfile
+from pathlib import Path
+import xml.etree.ElementTree as ET
+
+def main() -> int:
+    p = argparse.ArgumentParser()
+    p.add_argument("--project-root", type=Path, required=True)
+    p.add_argument("--output-dir", type=Path, required=True)
+    p.add_argument("--format", choices=["epub", "pdf", "both"], default="both")
+    a = p.parse_args()
+    root, out = a.project_root.resolve(), a.output_dir.resolve()
+    manifest = json.loads((root / "project-manifest.json").read_text(encoding="utf-8"))
+    count = manifest["chapters"]["count"]
+    if count < 1:
+        raise SystemExit("No chapters to validate")
+    if a.format in ("epub", "both"):
+        f = out / "roman.epub"
+        with zipfile.ZipFile(f) as z:
+            if z.testzip() is not None or z.read("mimetype") != b"application/epub+zip":
+                raise SystemExit("Invalid EPUB archive")
+            names = z.namelist()
+            navs = [name for name in names if name.endswith("nav.xhtml")]
+            if not navs:
+                raise SystemExit("Missing EPUB navigation")
+            nav = z.read(navs[0])
+            ET.fromstring(nav)
+            # Pandoc creates a chapter anchor for every Markdown H1.
+            references = re.findall(rb'href="[^"]+\.xhtml(?:#[^"]*)?"', nav)
+            if len(references) < count:
+                raise SystemExit("EPUB has too few navigation links")
+    if a.format in ("pdf", "both"):
+        b = (out / "roman.pdf").read_bytes()
+        if not b.startswith(b"%PDF-") or b"%%EOF" not in b[-2048:]:
+            raise SystemExit("Invalid PDF")
+    print(f"BOOK VALIDATION: PASS ({count} chapters, {a.format})")
+    return 0
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+`````
