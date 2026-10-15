@@ -51,10 +51,8 @@ def main() -> int:
             run(cmd)
             fixer = root / "publishing/fix-epub-after-pandoc.py"
             if fixer.exists():
-                help_result = subprocess.run([sys.executable, str(fixer), "--help"], capture_output=True, text=True)
-                # Fixers vary by template version; fail rather than guessing arguments.
-                if help_result.returncode == 0 and "usage:" in help_result.stdout.lower():
-                    pass
+                run([sys.executable, str(fixer), str(target), str(Path(tmp) / "fixed.epub")])
+                (Path(tmp) / "fixed.epub").replace(target)
         if args.format in ("pdf", "both"):
             target = output / "roman.pdf"
             cmd = options + ["--pdf-engine=xelatex", "--top-level-division=chapter",
